@@ -1,0 +1,120 @@
+//location types
+
+export type Coordinates = {
+  lat: number;
+  lng: number;
+};
+export type Currency = {
+  currency: "NGN" | "GHS" | "KES";
+};
+
+export type UserLocation = {
+  coords: Coordinates;
+  label: string; //actual street level address e.g 12 Adeola Hopewell St. VI
+  countryCode: string; //NG
+  source: "search" | "pin"; //for V1 i'm only using search, but i want to widen it to pin so the user can capture locations that don't nominally exist in the GeoApify API, for example, some streets are excluded.
+};
+
+export type LocationResult = {
+  id: string;
+  label: string;
+  coords: Coordinates;
+  countryCode: string;
+};
+
+export const SupportedCountries = ["NG", "GH", "KE"] as const; //assert it so that supported country knows it HAS to be NG | GH | KE
+export type SupportedCountry = (typeof SupportedCountries)[number]; // NG, GH or KE
+
+// Cuisine
+export type Cuisine =
+  | "Nigerian"
+  | "Ghanaian"
+  | "Kenyan"
+  | "Italian"
+  | "Chinese"
+  | "Indian"
+  | "American"
+  | "Fast Food"
+  | "Continental"; // catch-all for anything unrecognised
+
+//restaurant
+export type Restaurant = {
+  id: string; //geoApify place id
+  name: string;
+  address: string;
+  coords: Coordinates;
+  cuisine: Cuisine;
+  rating: number; //random, gotten off the id
+  distanceKM: number;
+  deliveryTimeMins: number;
+  priceTier: 1 | 2 | 3;
+  photoURL: string | null;
+};
+
+export type Meal = {
+  id: string; //purely generated gotten from the restaurant ID
+  restaurantID: string; //gotten off the place ID, passed into the menu page using useParams
+  name: string;
+  description: string;
+  category: string;
+  price: number;
+};
+
+//Cart types
+export type CartItem = {
+  menuItemID: string;
+  name: string;
+  price: number;
+  quantity: number;
+};
+
+export type CartState = {
+  restaurantID: string | null;
+  restaurantName: string | null;
+  items: CartItem[];
+};
+
+export type CartActions =
+  | {
+      type: "ADD_ITEM";
+      restaurantID: string;
+      restaurantName: string;
+      item: CartItem;
+    }
+  | {
+      type: "REMOVE_ITEM";
+      menuItemID: string;
+    }
+  | { type: "UPDATE_QTY"; menuItemID: string; quantity: number }
+  | { type: "CLEAR_CART" };
+
+//order types
+
+export type OrderStage =
+  | "placed"
+  | "confirmed"
+  | "preparing"
+  | "pickedUp"
+  | "onTheWay"
+  | "delivered";
+
+export type Order = {
+  id: string;
+  restaurantID: string;
+  restaurantName: string;
+  items: CartItem[];
+  total: number; //total cost in NGN/GHS/KES
+  deliveryAddress: string;
+  deliveryCoords: Coordinates;
+  driverInstructions: string;
+  createdAt: number; // regular JS milliseconds, we're going to derive the order stage from this
+  etaMinutes: number; // copied from restaurant delivery time
+  paystackReference: string;
+};
+
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  passwordHash: string;
+};

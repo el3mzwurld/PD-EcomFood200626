@@ -48,4 +48,41 @@ export const countryToCuisine: Record<SupportedCountry, Cuisine> = {
   KE: "Kenyan",
 };
 
-export const weigh;
+export const weightedCuisinePool: Record<SupportedCountry, Cuisine[]> = {
+  NG: [
+    "Nigerian",
+    "Nigerian",
+    "Nigerian",
+    "Nigerian",
+    "Nigerian",
+    "Fast Food",
+    "Fast Food",
+    "Continental",
+    "Chinese",
+    "American",
+  ],
+  GH: [
+    "Ghanaian",
+    "Ghanaian",
+    "Ghanaian",
+    "Ghanaian",
+    "Ghanaian",
+    "Fast Food",
+    "Fast Food",
+    "Continental",
+    "Chinese",
+    "American",
+  ],
+  KE: [
+    "Kenyan",
+    "Kenyan",
+    "Kenyan",
+    "Kenyan",
+    "Kenyan",
+    "Fast Food",
+    "Fast Food",
+    "Indian",
+    "Continental",
+    "Chinese",
+  ],
+};

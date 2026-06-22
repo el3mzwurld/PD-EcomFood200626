@@ -1,7 +1,6 @@
-import { LocationResult, type Coordinates } from "../types/types";
+import type { LocationResult, Coordinates } from "../types/types";
 
 const places_url = "https://api.geoapify.com/v2/places";
-const geocode_url = "https://api.geoapify.com/v1/geocode/search?";
 const autocomplete_url = "https://api.geoapify.com/v1/geocode/autocomplete";
 const api_key = import.meta.env.VITE_API_KEY;
 

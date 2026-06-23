@@ -3,7 +3,7 @@ import type { LocationResult, Coordinates } from "../types/types";
 const places_url = "https://api.geoapify.com/v2/places";
 const autocomplete_url = "https://api.geoapify.com/v1/geocode/autocomplete";
 const api_key = import.meta.env.VITE_API_KEY;
-
+const routing_matrix_url = "https://api.geoapify.com/v1/routematrix";
 type GeoapifyFeature = {
   properties: {
     place_id: string;
@@ -66,6 +66,7 @@ export async function fetchLocationSuggestions(
 type RawPlaceProperties = {
   place_id: string;
   name: string;
+  country_code: string;
   formatted: string;
   lat: number;
   lon: number;
@@ -112,4 +113,60 @@ export async function fetchNearbyRestaurants(
   );
 
   return filtered_data;
+}
+
+type RouteResult = {
+  distanceKM: number;
+  travelTimeSecs: number;
+  available: boolean;
+};
+
+type RouteMatrixResponse = {
+  sources_to_targets: Array<
+    Array<{
+      distance: number;
+      time: number;
+      source_index: number;
+      target_index: number;
+    } | null>
+  >;
+};
+
+export async function fetchRouteTimes(
+  userCoords: Coordinates,
+  restaurantCoords: Coordinates[],
+  signal?: AbortSignal,
+): Promise<RouteResult[]> {
+  const body = {
+    mode: "drive",
+    sources: [{ location: [userCoords.lat, userCoords.lng] }],
+    targets: restaurantCoords.map((c) => ({ location: [c.lat, c.lng] })),
+  };
+
+  const res = await fetch(`${routing_matrix_url}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    signal: signal,
+  });
+
+  if (!res.ok)
+    throw new Error(
+      `Failed to find route matrix for source :${userCoords} to targets : ${restaurantCoords}`,
+    );
+
+  const data: RouteMatrixResponse = await res.json();
+
+  const routes = data.sources_to_targets[0].map((place): RouteResult => {
+    if (!place) {
+      return { distanceKM: 0, available: false, travelTimeSecs: 0 };
+    }
+    return {
+      distanceKM: +(place.distance / 1000).toFixed(2),
+      travelTimeSecs: place.time,
+      available: true,
+    };
+  });
+
+  return routes;
 }

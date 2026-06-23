@@ -49,6 +49,7 @@ export type Restaurant = {
   deliveryTimeMins: number;
   priceTier: 1 | 2 | 3;
   photoURL: string | null;
+  available: boolean;
 };
 
 export type Meal = {

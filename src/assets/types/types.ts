@@ -114,8 +114,7 @@ export type Order = {
 };
 
 export type User = {
-  id: string;
   name: string;
   email: string;
-  passwordHash: string;
+  password: string;
 };

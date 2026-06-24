@@ -76,7 +76,7 @@ type RawPlaceProperties = {
   };
 };
 
-type RawPlace = {
+export type RawPlace = {
   properties: RawPlaceProperties;
 };
 

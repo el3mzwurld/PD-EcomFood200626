@@ -11,11 +11,10 @@ export const DEFAULT_RADIUS = 3000; // 3km — first attempt
 export const EXPANDED_RADIUS = 8000; // 8km — one retry if first comes back empty
 export const MIN_RESULTS = 3; //if the number of restaurants fall below 3, widen the radius...if it's still thin, fall back on 'We're not available in this location'
 
-export const useRestaurants = () => {
+export const useRestaurant = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [radius, setRadius] = useState<number>(DEFAULT_RADIUS);
 
   // current location state from the context
   const { location } = useLocation();
@@ -33,15 +32,14 @@ export const useRestaurants = () => {
         // try fetching in minimum radius
         let rawResults = await fetchNearbyRestaurants(
           location.coords,
-          radius,
+          DEFAULT_RADIUS,
           controller.signal,
         );
         // if the number of restaurants found in that radius falls below the minimum treshold, widen the radius and fetch again
         if (rawResults.length < MIN_RESULTS) {
-          setRadius(EXPANDED_RADIUS);
           rawResults = await fetchNearbyRestaurants(
             location.coords,
-            radius,
+            EXPANDED_RADIUS,
             controller.signal,
           );
         }
@@ -66,6 +64,8 @@ export const useRestaurants = () => {
         const enrichedRestaurants = rawResults.map((raw, index) =>
           enrichRestaurant(raw, routeResults[index]),
         );
+
+        setRestaurants(enrichedRestaurants);
       } catch (err) {
         if ((err as Error).name === "AbortError") return;
         setError(
@@ -74,6 +74,8 @@ export const useRestaurants = () => {
         console.error(err);
       }
     };
+
+    fetchRestaurants();
 
     return () => controller.abort();
   }, [location?.coords.lat, location?.coords.lng]);

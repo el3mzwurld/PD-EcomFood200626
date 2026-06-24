@@ -2,7 +2,7 @@ import type { LocationResult, Coordinates } from "../types/types";
 
 const places_url = "https://api.geoapify.com/v2/places";
 const autocomplete_url = "https://api.geoapify.com/v1/geocode/autocomplete";
-const api_key = import.meta.env.VITE_API_KEY;
+const api_key = "adbe980b02b341a498650221d57beea8";
 const routing_matrix_url = "https://api.geoapify.com/v1/routematrix";
 type GeoapifyFeature = {
   properties: {

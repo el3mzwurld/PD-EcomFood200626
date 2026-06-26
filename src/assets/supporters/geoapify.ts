@@ -29,7 +29,6 @@ export async function fetchLocationSuggestions(
     text: query,
     apiKey: api_key,
     limit: "5", //maximum of 5 suggestions per search
-    format: "json",
   });
 
   // fetch data
@@ -39,7 +38,6 @@ export async function fetchLocationSuggestions(
   if (!res.ok) throw new Error(`Autocomplete error, ${res.status}`);
 
   const data: GeoapifyResponse = await res.json();
-
   // filter the data into valid arrays
   const filtered_data = data.features.filter(
     (f) =>

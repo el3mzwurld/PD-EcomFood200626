@@ -116,7 +116,7 @@ export const continentalMenu: MealTemplate[] = [
   },
 ];
 
-export const ghanaianMenu: MealTemplate[] = [
+export const ghanaianContMenu: MealTemplate[] = [
   // Starters
   {
     name: "Plantain Chips",
@@ -232,7 +232,7 @@ export const ghanaianMenu: MealTemplate[] = [
   },
 ];
 
-export const kenyaMenu: MealTemplate[] = [
+export const kenyaContMenu: MealTemplate[] = [
   // Starters
   {
     name: "Samosas (4 pcs)",

@@ -137,11 +137,11 @@ export async function fetchRouteTimes(
 ): Promise<RouteResult[]> {
   const body = {
     mode: "drive",
-    sources: [{ location: [userCoords.lat, userCoords.lng] }],
-    targets: restaurantCoords.map((c) => ({ location: [c.lat, c.lng] })),
+    sources: [{ location: [userCoords.lng, userCoords.lat] }],
+    targets: restaurantCoords.map((c) => ({ location: [c.lng, c.lat] })),
   };
 
-  const res = await fetch(`${routing_matrix_url}`, {
+  const res = await fetch(`${routing_matrix_url}?apiKey=${api_key}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -150,7 +150,7 @@ export async function fetchRouteTimes(
 
   if (!res.ok)
     throw new Error(
-      `Failed to find route matrix for source :${userCoords} to targets : ${restaurantCoords}`,
+      `Route Matrix failed to execute with status: ${res.status}`,
     );
 
   const data: RouteMatrixResponse = await res.json();

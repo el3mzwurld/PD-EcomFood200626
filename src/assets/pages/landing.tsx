@@ -6,11 +6,16 @@ import React, { useEffect, useState, type SetStateAction } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import type { LocationResult } from "../types/types";
 import { useSearch } from "../hooks/useSearch";
+import { useLocation } from "../context/locationContext";
+import { useNavigate } from "react-router-dom";
+
 const LandingPage = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [query, setQuery] = useState("");
 
   const { isLoading, searchError, results } = useSearch(query);
+
+  const { setLocation } = useLocation();
 
   const theme = useTheme();
   useEffect(() => {
@@ -53,13 +58,14 @@ const LandingPage = () => {
             p: 1,
             alignItems: "center",
             justifyContent: "space-between",
+            background: "transparent",
           }}
         >
           {/*navigation :  nav should have logo and signup/login button */}
           <Typography
             variant="body2"
             sx={{
-              fontFamily: "open sans",
+              fontFamily: "montserrat",
               fontWeight: 600,
               fontSize: { xs: 13, lg: 16 },
             }}
@@ -176,6 +182,7 @@ const LandingPage = () => {
             query={query}
             setQuery={setQuery}
             isLoading={isLoading}
+            setLocation={setLocation}
           />
         </Box>
       </Box>
@@ -188,12 +195,14 @@ interface SearchBarProps {
   query: string;
   setQuery: React.Dispatch<SetStateAction<string>>;
   isLoading: boolean;
+  setLocation: (result: LocationResult) => void;
 }
 const SearchBar = ({
   searchResults,
   query,
   setQuery,
   isLoading,
+  setLocation,
 }: SearchBarProps) => {
   const theme = useTheme();
   return (
@@ -266,7 +275,11 @@ const SearchBar = ({
       >
         {searchResults.length > 0 &&
           searchResults.map((result, index) => (
-            <SearchCard location={result} key={index} />
+            <SearchCard
+              location={result}
+              key={index}
+              setLocation={setLocation}
+            />
           ))}
       </Box>
     </Stack>
@@ -275,11 +288,21 @@ const SearchBar = ({
 
 interface CardProps {
   location: LocationResult;
+  setLocation: (res: LocationResult) => void;
 }
 
-const SearchCard = ({ location }: CardProps) => {
+const SearchCard = ({ location, setLocation }: CardProps) => {
+  const navigate = useNavigate();
+  const handleNav = () => {
+    navigate("/restaurants");
+  };
   return (
     <Box
+      component={"div"}
+      onClick={() => {
+        setLocation(location);
+        handleNav();
+      }}
       sx={{
         width: "100%",
         height: { xs: 40 },
@@ -289,6 +312,7 @@ const SearchCard = ({ location }: CardProps) => {
         justifyContent: "space-between",
         px: 1.5,
         gap: 0.5,
+        cursor: "pointer",
       }}
     >
       <Typography

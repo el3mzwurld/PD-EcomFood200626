@@ -60,6 +60,8 @@ export const LocationProvider = ({
     setLocationError(null);
   };
 
+  console.log(location);
+
   return (
     <LocationContext.Provider
       value={{ location, locationError, setLocation, clearLocation }}

@@ -2,7 +2,6 @@ import type { Cuisine, SupportedCountry } from "../types/types";
 import {
   continentalMenu,
   ghanaianContMenu,
-  ghanaianMenu,
   kenyaContMenu,
 } from "./continental";
 import {
@@ -10,13 +9,14 @@ import {
   ghanianFastFoodMenu,
   kenyanFastFoodMenu,
 } from "./fastFood";
+import { ghanianMenu } from "./ghanian";
 import { kenyanMenu } from "./kenyan";
 import { nigerianMenu, type MealTemplate } from "./nigerian";
 
 export const localMenuMapper: Partial<Record<Cuisine, MealTemplate[]>> = {
   Nigerian: nigerianMenu,
   Kenyan: kenyanMenu,
-  Ghanaian: ghanaianMenu,
+  Ghanaian: ghanianMenu,
 };
 
 export const continentalMenuMapper: Record<SupportedCountry, MealTemplate[]> = {

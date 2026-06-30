@@ -4,9 +4,7 @@ export type Coordinates = {
   lat: number;
   lng: number;
 };
-export type Currency = {
-  currency: "NGN" | "GHS" | "KES";
-};
+export type Currency = "NGN" | "GHS" | "KES";
 
 export type UserLocation = {
   coords: Coordinates;

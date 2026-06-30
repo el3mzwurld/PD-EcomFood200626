@@ -10,10 +10,40 @@ body {
   display: flex;
   flex-direction: column; /* overflow-x: hidden; */
 }
+
 #root {
   width: 100%;
   height: auto;
 }
 header {
   background-color: none;
+}
+
+.active {
+  position: relative;
+
+  &::before {
+    position: absolute;
+    width: 50%;
+    height: 3px;
+    content: "";
+    bottom: -5px;
+    background-color: black;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    visibility: hidden;
+    animation: active-anim 0.5s ease-in forwards;
+  }
+}
+
+@keyframes active-anim {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
 }

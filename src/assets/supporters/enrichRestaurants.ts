@@ -5,7 +5,7 @@ import type { Restaurant } from "../types/types";
 import type { RawPlace } from "./geoapify";
 import { seededRandom } from "./randomizer";
 import { resolveCuisine } from "./resolveCuisine";
-
+import placeholder from "../img/placeholder.png";
 export const enrichRestaurant = (
   raw: RawPlace,
   route: { distanceKM: number; travelTimeSecs: number; available: boolean },
@@ -32,6 +32,6 @@ export const enrichRestaurant = (
     priceTier: (Math.floor(random() * 3) + 1) as 1 | 2 | 3,
     name: raw.properties.name,
     rating: +(3.5 + random() * 1.5).toFixed(1),
-    photoURL: `https://picsum.photos/seed/${raw.properties.place_id}/400/250`,
+    photoURL: placeholder,
   };
 };

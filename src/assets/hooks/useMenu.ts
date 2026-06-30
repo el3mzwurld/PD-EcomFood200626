@@ -11,10 +11,15 @@ import { useEffect, useState } from "react";
 const apiCuisineDishes: Partial<Record<Cuisine, string[]>> = {
   Italian: [
     "Spaghetti Carbonara",
-    "Pizza Margherita",
+    "Pizza",
     "Tiramisu",
     "Risotto",
     "Penne Arrabiata",
+    "Spaghetti",
+    "Vegan Lasagna",
+    "Squash linguine",
+    "Rigatoni with fennel sausage sauce",
+    "Fettucine alfredo",
   ],
   Chinese: [
     "Kung Pao Chicken",
@@ -54,7 +59,7 @@ const mealDBMapper = (meal: MealDBResponse, restaurantID: string): Meal => {
     restaurantID: restaurantID,
     name: meal.strMeal,
     description: `A classic ${meal.strCategory.toLowerCase()} dish - made in ${meal.strArea.toLowerCase()}, straight to your doorstep.`,
-    category: meal.strCategory,
+    category: "Mains",
     price: 0,
   };
 };

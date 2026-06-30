@@ -3,8 +3,11 @@ import { useLocation } from "../context/locationContext";
 import { useUser } from "../context/userContext";
 import { AccountCircleRounded } from "@mui/icons-material";
 import { useRestaurant } from "../hooks/useRestaurants";
-import type { Restaurant } from "../types/types";
+import type { Restaurant, UserLocation } from "../types/types";
 
+// images
+import notfound from "../img/undraw_no-data_ig65.svg";
+import { useNavigate } from "react-router-dom";
 const Restaurants = () => {
   const { location, locationError, clearLocation } = useLocation();
   const { user, isAuthenticated } = useUser();
@@ -82,27 +85,75 @@ const Restaurants = () => {
         </Box>
       </Box>
 
-      <Box sx={{ width: "100%", height: "100vh", display: "flex", py: 1.5 }}>
-        <Grid
-          container
-          spacing={{ xs: 1.5, md: 3 }}
-          sx={{ px: { xs: 2, md: 1.25 }, width: "100%" }}
-        >
-          {restaurants.map((restaurant, index) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-              <RestaurantCard restaurant={restaurant} key={index} />
-            </Grid>
-          ))}
-        </Grid>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100vh",
+          display: "flex",
+          py: 1.5,
+          // alignItems: "center",
+          // justifyContent: "center",
+        }}
+      >
+        {restaurants.length > 0 && location ? (
+          <ResGrid restaurants={restaurants} location={location} />
+        ) : (
+          <Box
+            sx={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontFamily: "montserrat",
+            }}
+          >
+            <NotFound />
+          </Box>
+        )}
       </Box>
     </Box>
   );
 };
-interface CardProps {
-  restaurant: Restaurant;
+
+interface GridProps {
+  restaurants: Restaurant[];
+  location: UserLocation;
 }
 
-const RestaurantCard = ({ restaurant }: CardProps) => {
+const ResGrid = ({ restaurants, location }: GridProps) => {
+  return (
+    <Grid
+      container
+      spacing={{ xs: 1.5, md: 3 }}
+      sx={{ px: { xs: 2, md: 1.25 }, width: "100%" }}
+    >
+      {restaurants.map((restaurant, index) => (
+        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
+          <RestaurantCard restaurant={restaurant} location={location} />
+        </Grid>
+      ))}
+    </Grid>
+  );
+};
+
+interface CardProps {
+  restaurant: Restaurant;
+  location: UserLocation;
+}
+
+const RestaurantCard = ({ restaurant, location }: CardProps) => {
+  const navigate = useNavigate();
+  const handleNav = () => {
+    navigate(`/restaurant/${restaurant.id}`, {
+      state: {
+        cuisine: restaurant.cuisine,
+        countryCode: location.countryCode,
+        restaurant: restaurant,
+      },
+    });
+  };
+
   return (
     <Stack
       sx={{
@@ -111,10 +162,32 @@ const RestaurantCard = ({ restaurant }: CardProps) => {
         alignItems: "start",
         cursor: "pointer",
         fontFamily: "open sans",
+        ":hover": {
+          textDecoration: "underline",
+        },
       }}
+      onClick={handleNav}
     >
       {/* image -placeholder */}
-      <Box sx={{ width: "100%", height: "70%", backgroundColor: "gray" }}></Box>
+      <Box
+        sx={{
+          width: "100%",
+          height: "70%",
+          backgroundColor: restaurant.photoURL ? "none" : "gray",
+        }}
+      >
+        {restaurant.photoURL && (
+          <img
+            src={restaurant.photoURL}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center",
+            }}
+          ></img>
+        )}
+      </Box>
       {/* restaurant info */}
       <Stack
         sx={{
@@ -138,4 +211,40 @@ const RestaurantCard = ({ restaurant }: CardProps) => {
   );
 };
 
+const NotFound = () => {
+  const theme = useTheme();
+  return (
+    <Stack spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
+      <Box
+        sx={{
+          width: { xs: 125, md: 150 },
+          height: { xs: 140, md: 150 },
+        }}
+      >
+        <img
+          src={notfound}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            objectPosition: "center",
+          }}
+          alt=""
+        />
+      </Box>
+      <Typography
+        variant="body1"
+        sx={{
+          fontFamily: "montserrat",
+          [theme.breakpoints.down("sm")]: {
+            fontSize: 12,
+          },
+          fontWeight: 500,
+        }}
+      >
+        Sorry, we're not available in your area.
+      </Typography>
+    </Stack>
+  );
+};
 export default Restaurants;

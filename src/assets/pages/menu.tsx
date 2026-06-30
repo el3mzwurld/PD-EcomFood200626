@@ -59,7 +59,7 @@ const Menu = () => {
 
   const { location } = useLocation();
   const { user, isAuthenticated } = useUser();
-
+  const { cart, clearCart } = useCart();
   // filter the menu to starters, mains and drinks
   const starters = menu.filter((item) => {
     const category = item.category?.toLowerCase?.();
@@ -73,6 +73,12 @@ const Menu = () => {
     const category = item.category?.toLowerCase?.();
     return category === "drink" || category === "drinks";
   });
+  //user should only be able to order from one restaurant at a time, hence, if a user leaves a restaurant and enters a new one? the cart should clear upon mount
+  useEffect(() => {
+    if (cart.restaurantID !== restaurant.id) {
+      clearCart();
+    }
+  }, []);
 
   return (
     <div className="b" style={{ width: "100%", minHeight: "100vh" }}>

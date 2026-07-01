@@ -4,91 +4,27 @@ import { useUser } from "../context/userContext";
 import { AccountCircleRounded } from "@mui/icons-material";
 import { useRestaurant } from "../hooks/useRestaurants";
 import type { Restaurant, UserLocation } from "../types/types";
-
+import { useNavigate } from "react-router-dom";
+import { Footer, Navbar } from "./menu";
 // images
 import notfound from "../img/undraw_no-data_ig65.svg";
-import { useNavigate } from "react-router-dom";
+import loader from "../img/loader.svg";
+
 const Restaurants = () => {
   const { location, locationError, clearLocation } = useLocation();
   const { user, isAuthenticated } = useUser();
 
   const theme = useTheme();
 
-  const { restaurants } = useRestaurant();
+  const { restaurants, isLoading } = useRestaurant();
   return (
     <Box sx={{ width: "100%", minHeight: "100vh" }}>
-      <Box
-        component={"header"}
-        sx={{
-          height: { xs: 42.5, md: 46 },
-          px: 1.25,
-          py: 0.8,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          background: "transparent",
-        }}
-      >
-        {/* nyamza */}
-        <Typography
-          variant="body2"
-          sx={{
-            fontFamily: "montserrat",
-            fontWeight: 600,
-            fontSize: { xs: 13, lg: 16 },
-          }}
-        >
-          Nyamza.
-        </Typography>
-
-        <Box
-          sx={{
-            minWidth: { xs: "50%", md: "30%" },
-            maxWidth: { xs: "55%", md: "45%" },
-            height: "100%",
-            borderRadius: 2,
-            backgroundColor: "black",
-            color: "white",
-            fontFamily: "open sans",
-            p: 0.8,
-            fontSize: { xs: 12, lg: 13 },
-            overflow: "hidden",
-            textWrap: "nowrap",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {location ? location.label : "Set a delivery address..."}
-        </Box>
-
-        <Box
-          sx={{
-            width: "auto",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{
-              fontFamily: "montserrat",
-              color: "text.disabled",
-              fontWeight: 600,
-            }}
-          >
-            {user && isAuthenticated ? (
-              user.name
-            ) : (
-              <AccountCircleRounded sx={{ width: "30px", height: "30px" }} />
-            )}
-          </Typography>
-        </Box>
-      </Box>
+      <Navbar />
 
       <Box
         sx={{
           width: "100%",
-          height: "100vh",
+          minHeight: "100vh",
           display: "flex",
           py: 1.5,
           // alignItems: "center",
@@ -101,17 +37,19 @@ const Restaurants = () => {
           <Box
             sx={{
               width: "100%",
-              height: "100%",
+              height: "100vh",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontFamily: "montserrat",
+              opacity: 0.8,
             }}
           >
             <NotFound />
           </Box>
         )}
       </Box>
+      <Footer />
     </Box>
   );
 };
@@ -126,7 +64,7 @@ const ResGrid = ({ restaurants, location }: GridProps) => {
     <Grid
       container
       spacing={{ xs: 1.5, md: 3 }}
-      sx={{ px: { xs: 2, md: 1.25 }, width: "100%" }}
+      sx={{ px: { xs: 2, md: 4 }, width: "100%" }}
     >
       {restaurants.map((restaurant, index) => (
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
@@ -174,6 +112,13 @@ const RestaurantCard = ({ restaurant, location }: CardProps) => {
           width: "100%",
           height: "70%",
           backgroundColor: restaurant.photoURL ? "none" : "gray",
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
+          borderTop: "1px solid",
+          borderLeft: "1px solid",
+          borderRight: "1px solid",
+          borderColor: "secondary.dark",
+          overflow: "hidden",
         }}
       >
         {restaurant.photoURL && (

@@ -5,7 +5,7 @@ import { CartProvider } from "./assets/context/cartContext.tsx";
 import { LocationProvider } from "./assets/context/locationContext";
 import { UserProvider } from "./assets/context/userContext";
 import { BrowserRouter } from "react-router-dom";
-import { ThemeProvider } from "styled-components";
+import { ThemeProvider } from "@mui/material/styles";
 import "./assets/styles/global.css";
 import theme from "./assets/theme/theme.ts";
 

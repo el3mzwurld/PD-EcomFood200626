@@ -28,7 +28,7 @@ header {
     height: 3px;
     content: "";
     bottom: -5px;
-    background-color: black;
+    background-color: #ff6b35;
     left: 50%;
     transform: translateX(-50%);
     opacity: 0;
@@ -46,4 +46,9 @@ header {
     opacity: 1;
     visibility: visible;
   }
+}
+
+.cart--container {
+  transition: "0.5s ease-in-out";
+  cursor: pointer;
 }

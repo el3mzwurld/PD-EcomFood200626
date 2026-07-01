@@ -1,4 +1,4 @@
-import { createTheme } from "styled-components";
+import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   palette: {
@@ -11,7 +11,7 @@ const theme = createTheme({
     secondary: {
       main: "#F4A261",
       light: "#FFD6A0",
-      dark: "#C0763F",
+      dark: "#c0773f27",
       contrastText: "#1A1A1A",
     },
     error: {

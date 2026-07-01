@@ -22,19 +22,32 @@ import {
 } from "@mui/material";
 import { useLocation } from "../context/locationContext";
 import { useUser } from "../context/userContext";
-import { AccountCircleRounded, Opacity } from "@mui/icons-material";
-
+import {
+  AccountCircleRounded,
+  ArrowBack,
+  ShoppingCart,
+  ShoppingCartRounded,
+} from "@mui/icons-material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useMenu } from "../hooks/useMenu";
 import { useRestaurant } from "../hooks/useRestaurants";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { useCart } from "../context/cartContext";
+import emptyCart from "../img/emptycart.svg";
+
+import res1 from "../img/restaurants/jason-leung-poI7DelFiVA-unsplash.jpg";
+import res2 from "../img/restaurants/jay-wennington-N_Y88TWmGwA-unsplash.jpg";
+import res3 from "../img/restaurants/kayleigh-harrington-yhn4okt6ci0-unsplash.jpg";
+import res4 from "../img/restaurants/nabeel-hussain-WhBcCMqFQhk-unsplash.jpg";
+import res5 from "../img/restaurants/patrick-tomasso-GXXYkSwndP4-unsplash.jpg";
+import { seededRandom } from "../supporters/randomizer";
 
 const Menu = () => {
   const [menuSection, setMenuSection] = useState<
     "starter" | "mains" | "drinks"
   >("starter");
-
+  const [restaurantBanner, setRestaurantBanner] = useState<string | null>(null);
   const handleMenuSectionChange = (page: "starter" | "mains" | "drinks") => {
     if (page === menuSection) {
       return;
@@ -57,8 +70,6 @@ const Menu = () => {
     countryCode,
   );
 
-  const { location } = useLocation();
-  const { user, isAuthenticated } = useUser();
   const { cart, clearCart } = useCart();
   // filter the menu to starters, mains and drinks
   const starters = menu.filter((item) => {
@@ -73,82 +84,47 @@ const Menu = () => {
     const category = item.category?.toLowerCase?.();
     return category === "drink" || category === "drinks";
   });
+  const random = seededRandom(restaurant.id);
+
+  // image array for the restaurant banner
+  const imgArray = [res1, res2, res3, res4, res5];
   //user should only be able to order from one restaurant at a time, hence, if a user leaves a restaurant and enters a new one? the cart should clear upon mount
   useEffect(() => {
     if (cart.restaurantID !== restaurant.id) {
       clearCart();
     }
+    const randomIndex = Math.floor(random() * imgArray.length);
+    setRestaurantBanner(imgArray[randomIndex]);
   }, []);
 
   return (
     <div className="b" style={{ width: "100%", minHeight: "100vh" }}>
-      <Box
-        component={"header"}
+      <Navbar />
+      <Stack
+        direction={"row"}
         sx={{
-          height: { xs: 42.5, md: 46 },
-          px: 1.25,
-          py: 0.8,
-          display: "flex",
+          width: "100%",
           alignItems: "center",
-          justifyContent: "space-between",
-          background: "transparent",
+          gap: "3px",
+          px: 2,
         }}
       >
-        {/* nyamza */}
+        <ArrowBack sx={{ width: "10px" }} />
         <Typography
-          variant="body2"
+          variant="caption"
           sx={{
-            fontFamily: "montserrat",
-            fontWeight: 600,
-            fontSize: { xs: 13, lg: 16 },
-          }}
-        >
-          Nyamza.
-        </Typography>
-
-        <Box
-          sx={{
-            minWidth: { xs: "50%", md: "30%" },
-            maxWidth: { xs: "55%", md: "45%" },
-            height: "100%",
-            borderRadius: 2,
-            backgroundColor: "black",
-            color: "white",
-            fontFamily: "open sans",
-            p: 0.8,
-            fontSize: { xs: 12, lg: 13 },
-            overflow: "hidden",
             textWrap: "nowrap",
-            textOverflow: "ellipsis",
+            cursor: "pointer",
+            textAlign: "center",
+            fontWeight: 600,
+            fontSize: 10,
+            color: "primary.dark",
           }}
+          onClick={() => navigate(-1)}
         >
-          {location ? location.label : "Set a delivery address..."}
-        </Box>
-
-        <Box
-          sx={{
-            width: "auto",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{
-              fontFamily: "montserrat",
-              color: "text.disabled",
-              fontWeight: 600,
-            }}
-          >
-            {user && isAuthenticated ? (
-              user.name
-            ) : (
-              <AccountCircleRounded sx={{ width: "30px", height: "30px" }} />
-            )}
-          </Typography>
-        </Box>
-      </Box>
+          Go back to <span>restaurants</span>
+        </Typography>
+      </Stack>
       <Stack
         direction={{ xs: "column", md: "row" }}
         sx={{
@@ -188,9 +164,24 @@ const Menu = () => {
             sx={{
               width: { xs: "100%" },
               height: { xs: 120, lg: 170 },
-              backgroundColor: "grey",
+              background: restaurantBanner && "none",
+              backgroundColor: restaurantBanner ? "none" : "gray",
+              overflow: "hidden",
+              filter: "blur(0.7px)",
             }}
-          ></Box>
+          >
+            {restaurantBanner && (
+              <img
+                src={restaurantBanner}
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "center",
+                  width: "100%",
+                  height: "100%",
+                }}
+              ></img>
+            )}
+          </Box>
 
           {/* Menu */}
           <Box sx={{ width: "100%" }}>
@@ -278,6 +269,8 @@ const Menu = () => {
         {/* checkout */}
         <OrderModal />
       </Stack>
+
+      <Footer />
     </div>
   );
 };
@@ -332,14 +325,14 @@ interface MealCardProps {
 const MealCard = ({ meal, restaurant }: MealCardProps) => {
   const { location } = useLocation();
   const country = location && (location.countryCode as SupportedCountry);
-  const [currency, setCurrency] = useState<Currency>(() => {
+  const currency = (): Currency => {
     if (country === "NG") {
       return "NGN";
     } else if (country === "GH") {
       return "GHS";
     }
     return "KES";
-  });
+  };
   const [quantity, setQuantity] = useState(0);
   // helper to normalize meal objects into cart items
   const normalizeMealtoCartItem = (meal: Meal, q?: number): CartItem => {
@@ -411,7 +404,7 @@ const MealCard = ({ meal, restaurant }: MealCardProps) => {
             fontFamily: "open sans",
           }}
         >
-          {currency}
+          <span>{currency()} </span>
           {meal.price}
         </Typography>
       </Stack>
@@ -440,7 +433,8 @@ const MealCard = ({ meal, restaurant }: MealCardProps) => {
           -
         </Button>
         <Typography variant="body2" sx={{ color: "text.disabled" }}>
-          {quantity}
+          {cart.items.find((item) => item.menuItemID === meal.id)?.quantity ??
+            0}
         </Typography>
         <Button
           sx={{
@@ -448,7 +442,7 @@ const MealCard = ({ meal, restaurant }: MealCardProps) => {
             color: "white",
             fontSize: { xs: 14 },
             height: { xs: 30 },
-            backgroundColor: "black",
+            backgroundColor: "primary.dark",
           }}
           onClick={handleInc}
         >
@@ -460,7 +454,31 @@ const MealCard = ({ meal, restaurant }: MealCardProps) => {
 };
 
 const OrderModal = () => {
-  const { cart } = useCart();
+  const { cart, clearCart, removeItem, addItem, updateQty } = useCart();
+  const restaurantID = cart && (cart.restaurantID as string);
+  const restaurantName = cart && (cart.restaurantName as string);
+  const handleInc = (menuID: string) => {
+    const item = cart.items.find((item) => item.menuItemID === menuID);
+
+    if (item) {
+      addItem(restaurantID, restaurantName, {
+        menuItemID: item.menuItemID,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity + 1,
+      });
+      return;
+    }
+  };
+  const { user, isAuthenticated } = useUser();
+  // handle decrement
+  const handleDec = (menuID: string) => {
+    const item = cart.items.find((item) => item.menuItemID === menuID);
+    if (item) {
+      updateQty(menuID, item.quantity - 1);
+      return;
+    }
+  };
   return (
     <Stack
       sx={{
@@ -472,16 +490,31 @@ const OrderModal = () => {
     >
       {/* title */}
       <Box sx={{ width: "100%", height: "auto", py: 1.2, pl: 0.8 }}>
-        <Typography
-          variant="body1"
+        <Stack
+          direction={"row"}
           sx={{
-            fontFamily: "montserrat",
-            fontSize: { md: 20 },
-            fontWeight: 600,
+            width: "100%",
+            height: "auto",
+            justifyContent: "space-between",
+            alignItems: "center",
+            py: 1,
           }}
         >
-          Order
-        </Typography>
+          <Typography
+            variant="body1"
+            sx={{
+              fontFamily: "montserrat",
+              fontSize: { md: 20 },
+              fontWeight: 600,
+            }}
+          >
+            Order
+          </Typography>
+          <DeleteIcon
+            onClick={clearCart}
+            sx={{ cursor: "pointer", color: "primary.dark" }}
+          />
+        </Stack>
         <Typography
           variant="caption"
           sx={{
@@ -490,7 +523,7 @@ const OrderModal = () => {
             color: "text.disabled",
           }}
         >
-          {cart.items.length} products
+          {cart.items.length} {cart.items.length === 1 ? "item" : "items"}
         </Typography>
       </Box>
       {/* cart */}
@@ -502,91 +535,358 @@ const OrderModal = () => {
           width: "100%",
           height: "auto",
           maxHeight: "450",
-          // backgroundColor: "gray",
+          transition: "0.3s easeIn",
         }}
       >
-        {cart.items.map((m) => (
-          <Stack
-            //cart item
-            direction={"row"}
-            sx={{
+        {cart.items.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.15, ease: "easeIn" }}
+            style={{
+              flex: 1,
               width: "100%",
-              height: { xs: 60 },
-              backgroundColor: "wheat",
+              height: "100%",
+              display: "flex",
               alignItems: "center",
-              justifyContent: "space-between",
-              px: 1,
-              position: "relative",
+              justifyContent: "center",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                top: 0,
-                right: 0,
-                height: "auto",
-                width: "auto",
+            <img
+              src={emptyCart}
+              style={{
+                width: "60%",
+                height: "60%",
+                objectPosition: "center",
+                opacity: 0.7,
               }}
-            ></Box>
-            <Typography
-              variant="caption"
-              sx={{ fontFamily: "open sans", fontWeight: 500 }}
-            >
-              {m.name}
-            </Typography>
+            ></img>
+          </motion.div>
+        ) : (
+          <>
+            {" "}
+            {cart.items.map((m) => (
+              <Stack
+                //cart item
+                component={motion.div}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.15, ease: "easeIn" }}
+                direction={"row"}
+                sx={{
+                  width: "100%",
+                  height: { xs: 60 },
+                  backgroundColor: "secondary.dark",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  px: 1,
+                  position: "relative",
+                  borderRadius: 0.4,
+                }}
+              >
+                <Box
+                  component={"div"}
+                  onClick={() => removeItem(m.menuItemID)}
+                  sx={{
+                    position: "absolute",
+                    top: 2.5,
+                    right: 10,
+                    height: "auto",
+                    width: "auto",
+                    cursor: "pointer",
+                  }}
+                >
+                  <DeleteIcon sx={{ width: 10, height: 10 }} />
+                </Box>
+                <Typography
+                  variant="caption"
+                  sx={{ fontFamily: "open sans", fontWeight: 500 }}
+                >
+                  {m.name}
+                </Typography>
 
-            {/* button group */}
-            <Stack
-              direction={"row"}
-              sx={{
-                width: "30%",
-                height: "auto",
-                justifyContent: "space-evenly",
-                alignItems: "center",
-                marginY: 1,
-              }}
-            >
-              <Box
-                sx={{
-                  width: { xs: 20 },
-                  color: "white",
-                  fontSize: { xs: 14 },
-                  height: { xs: 20 },
-                  backgroundColor: "black",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: 12.25,
-                }}
-              >
-                -
-              </Box>
-              <Typography variant="body2" sx={{ color: "text.disabled" }}>
-                {m.quantity}
-              </Typography>
-              <Box
-                sx={{
-                  width: { xs: 20 },
-                  color: "white",
-                  fontSize: { xs: 14 },
-                  height: { xs: 20 },
-                  backgroundColor: "black",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: 12.25,
-                }}
-              >
-                +
-              </Box>
-            </Stack>
-          </Stack>
-        ))}
+                {/* button group */}
+                <Stack
+                  direction={"row"}
+                  sx={{
+                    width: "30%",
+                    height: "auto",
+                    justifyContent: "space-evenly",
+                    alignItems: "center",
+                    marginY: 1,
+                  }}
+                >
+                  <Box
+                    onClick={() => handleDec(m.menuItemID)}
+                    sx={{
+                      width: { xs: 20 },
+                      color: "white",
+                      fontSize: { xs: 14 },
+                      height: { xs: 20 },
+                      backgroundColor: "black",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: 12.25,
+                    }}
+                  >
+                    -
+                  </Box>
+                  <Typography variant="body2" sx={{ color: "text.disabled" }}>
+                    {m.quantity}
+                  </Typography>
+                  <Box
+                    onClick={() => handleInc(m.menuItemID)}
+                    sx={{
+                      width: { xs: 20 },
+                      color: "white",
+                      fontSize: { xs: 14 },
+                      height: { xs: 20 },
+                      backgroundColor: "black",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: 12.25,
+                    }}
+                  >
+                    +
+                  </Box>
+                </Stack>
+              </Stack>
+            ))}{" "}
+          </>
+        )}
       </Stack>
+      {/* button */}
+      <Button
+        sx={{
+          width: "100%",
+          backgroundColor: cart.items.length !== 0 ? "black" : "text.disabled",
+          color: "white",
+          cursor: "pointer",
+        }}
+      >
+        Proceed to checkout (
+        {cart.items.reduce((acc, item) => acc + item.quantity, 0)})
+      </Button>
     </Stack>
   );
 };
 
+interface NavbarProps {
+  search?: boolean;
+}
+export const Navbar = ({ search }: NavbarProps) => {
+  const { location } = useLocation();
+  const { cart } = useCart();
+  const { user, isAuthenticated } = useUser();
+
+  return (
+    <Box
+      component={"header"}
+      sx={{
+        height: { xs: 42.5, md: 46 },
+        px: { xs: 1.5, md: 8 },
+        py: { xs: 0.8 },
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        background: "transparent",
+      }}
+    >
+      {/* nyamza */}
+      <Stack
+        direction={"row"}
+        spacing={{ xs: 1.5, md: 3 }}
+        sx={{ width: "auto", height: "100%", alignItems: "center" }}
+      >
+        <Typography
+          variant="body2"
+          sx={{
+            fontFamily: "montserrat",
+            fontWeight: 600,
+            fontSize: { xs: 13, lg: 16 },
+            color: "primary.dark",
+          }}
+        >
+          Nyamza.
+        </Typography>
+
+        <Box
+          sx={{
+            width: { xs: 110, md: 300 },
+            height: "100%",
+            backgroundColor: "background.paper",
+            fontFamily: "open sans",
+            color: "primary.dark",
+            p: 0.8,
+            fontSize: { xs: 8 },
+            overflow: "hidden",
+            textWrap: "nowrap",
+            textOverflow: "ellipsis",
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          <Typography variant="subtitle2" sx={{ fontSize: { xs: 8 } }}>
+            Delivery to:
+          </Typography>
+          {location ? location.label : "Set a delivery address..."}
+        </Box>
+      </Stack>
+      {/* search */}
+
+      {/* cart and user info */}
+      <Box
+        sx={{
+          width: "auto",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+          justifyContent: "center",
+        }}
+      >
+        <Stack
+          className="cart--container"
+          direction={"row"}
+          sx={{
+            width: 60,
+            height: "100%",
+            backgroundColor: "primary.main",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 1.8,
+
+            ":hover": {
+              backgroundColor: "primary.light",
+            },
+          }}
+        >
+          <ShoppingCartRounded sx={{ width: 20 }}></ShoppingCartRounded>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              fontFamily: "montserrat",
+              color: "black",
+              fontSize: { xs: 10 },
+            }}
+          >
+            {cart.items.length}
+          </Typography>
+        </Stack>
+        <Typography
+          variant="body2"
+          sx={{
+            fontFamily: "montserrat",
+            color: "text.disabled",
+            fontWeight: 600,
+          }}
+        >
+          {user && isAuthenticated ? (
+            user.name
+          ) : (
+            <AccountCircleRounded
+              sx={{ width: "30px", height: "30px", color: "secondary.main" }}
+            />
+          )}
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
+
+export const Footer = () => {
+  return (
+    <Box
+      component="footer"
+      sx={{
+        width: "100%",
+        mt: 4,
+        px: { xs: 2, sm: 3, md: 4 },
+        py: { xs: 2.5, sm: 3 },
+        borderTop: 1,
+        borderColor: "divider",
+        backgroundColor: "background.paper",
+      }}
+    >
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        spacing={{ xs: 1.5, md: 0 }}
+        sx={{
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", md: "center" },
+        }}
+      >
+        <Box>
+          <Typography
+            variant="subtitle1"
+            sx={{
+              fontFamily: "montserrat",
+              fontWeight: 700,
+              color: "primary.main",
+            }}
+          >
+            Nyamza
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              fontFamily: "montserrat",
+              color: "text.secondary",
+              mt: 0.5,
+            }}
+          >
+            Discover local favorites, order fast, and enjoy great meals.
+          </Typography>
+        </Box>
+
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={{ xs: 1, sm: 2 }}
+          sx={{
+            flexWrap: "wrap",
+            alignItems: { xs: "flex-start", sm: "center" },
+          }}
+        >
+          {[
+            { label: "About", href: "#" },
+            { label: "Support", href: "#" },
+            { label: "Privacy", href: "#" },
+          ].map((item) => (
+            <Typography
+              key={item.label}
+              component="a"
+              href={item.href}
+              variant="body2"
+              sx={{
+                fontFamily: "montserrat",
+                color: "text.secondary",
+                textDecoration: "none",
+                transition: "color 0.2s ease",
+                "&:hover": { color: "primary.main" },
+              }}
+            >
+              {item.label}
+            </Typography>
+          ))}
+        </Stack>
+      </Stack>
+
+      <Typography
+        variant="caption"
+        sx={{
+          display: "block",
+          mt: 2,
+          fontFamily: "montserrat",
+          color: "text.disabled",
+        }}
+      >
+        © 2026 Nyamza. All rights reserved.
+      </Typography>
+    </Box>
+  );
+};
 export default Menu;

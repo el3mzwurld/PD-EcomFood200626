@@ -61,13 +61,14 @@ const mealDBMapper = (meal: MealDBResponse, restaurantID: string): Meal => {
     description: `A classic ${meal.strCategory.toLowerCase()} dish - made in ${meal.strArea.toLowerCase()}, straight to your doorstep.`,
     category: "Mains",
     price: 0,
+    photoUrl: null,
   };
 };
 
 export const useMenu = (
-  restaurantID: string,
-  cuisine: Cuisine,
-  countryCode: SupportedCountry,
+  restaurantID?: string,
+  cuisine?: Cuisine,
+  countryCode?: SupportedCountry | undefined,
 ) => {
   const [menu, setMenu] = useState<Meal[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +77,7 @@ export const useMenu = (
   const the_meal_db_url =
     "https://www.themealdb.com/api/json/v1/1/search.php?s=";
   useEffect(() => {
-    if (!restaurantID || !cuisine) {
+    if (!restaurantID || !cuisine || !countryCode) {
       return;
     }
 

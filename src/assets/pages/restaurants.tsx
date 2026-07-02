@@ -2,7 +2,7 @@ import { Box, Grid, Stack, Typography, useTheme } from "@mui/material";
 import { useLocation } from "../context/locationContext";
 import { useUser } from "../context/userContext";
 import { AccountCircleRounded } from "@mui/icons-material";
-import { useRestaurant } from "../hooks/useRestaurants";
+import { useRestaurant } from "../context/restaurantContext";
 import type { Restaurant, UserLocation } from "../types/types";
 import { useNavigate } from "react-router-dom";
 import { Footer, Navbar } from "./menu";

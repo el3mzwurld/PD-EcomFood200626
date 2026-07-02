@@ -25,14 +25,15 @@ import { useUser } from "../context/userContext";
 import {
   AccountCircleRounded,
   ArrowBack,
+  Logout,
   ShoppingCart,
   ShoppingCartRounded,
 } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useMenu } from "../hooks/useMenu";
-import { useRestaurant } from "../hooks/useRestaurants";
+import { useRestaurant } from "../context/restaurantContext";
 import { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { m, motion } from "motion/react";
 import { useCart } from "../context/cartContext";
 import emptyCart from "../img/emptycart.svg";
 
@@ -59,16 +60,30 @@ const Menu = () => {
   const restaurantID = id as string;
   const loc = RouterLocation();
   const navigate = useNavigate();
+  const { location } = useLocation();
+  const {
+    getRestaurantById,
+    isLoading: resLoading,
+    restaurants,
+  } = useRestaurant();
+  console.log(restaurants);
+  const restaurant = getRestaurantById(restaurantID);
 
-  const data = loc.state;
-  const cuisine = data.cuisine as Cuisine;
-  const countryCode = data.countryCode as SupportedCountry;
-  const restaurant = data.restaurant as Restaurant;
+  const cuisine = restaurant?.cuisine;
+  const countryCode = location?.countryCode;
   const { menu, isLoading, error } = useMenu(
     restaurantID,
     cuisine,
     countryCode,
   );
+
+  useEffect(() => {
+    if (resLoading) return;
+
+    if (!restaurant) {
+      navigate("/restaurants", { replace: true });
+    }
+  }, [restaurant, resLoading, navigate]);
 
   const { cart, clearCart } = useCart();
   // filter the menu to starters, mains and drinks
@@ -84,18 +99,22 @@ const Menu = () => {
     const category = item.category?.toLowerCase?.();
     return category === "drink" || category === "drinks";
   });
-  const random = seededRandom(restaurant.id);
+  const random = seededRandom(restaurantID);
 
   // image array for the restaurant banner
   const imgArray = [res1, res2, res3, res4, res5];
   //user should only be able to order from one restaurant at a time, hence, if a user leaves a restaurant and enters a new one? the cart should clear upon mount
   useEffect(() => {
-    if (cart.restaurantID !== restaurant.id) {
+    if (cart.restaurantID !== restaurantID) {
       clearCart();
     }
     const randomIndex = Math.floor(random() * imgArray.length);
     setRestaurantBanner(imgArray[randomIndex]);
   }, []);
+
+  if (!restaurant) {
+    return null;
+  }
 
   return (
     <div className="b" style={{ width: "100%", minHeight: "100vh" }}>
@@ -267,7 +286,7 @@ const Menu = () => {
         </Stack>
 
         {/* checkout */}
-        <OrderModal />
+        <OrderModal restaurant={restaurant} />
       </Stack>
 
       <Footer />
@@ -453,10 +472,11 @@ const MealCard = ({ meal, restaurant }: MealCardProps) => {
   );
 };
 
-const OrderModal = () => {
-  const { cart, clearCart, removeItem, addItem, updateQty } = useCart();
+const OrderModal = ({ restaurant }: { restaurant: Restaurant }) => {
+  const { cart, clearCart, removeItem, addItem, updateQty, total } = useCart();
   const restaurantID = cart && (cart.restaurantID as string);
   const restaurantName = cart && (cart.restaurantName as string);
+  const { location } = useLocation();
   const handleInc = (menuID: string) => {
     const item = cart.items.find((item) => item.menuItemID === menuID);
 
@@ -479,6 +499,20 @@ const OrderModal = () => {
       return;
     }
   };
+  const currency = (location: SupportedCountry): Currency => {
+    if (location === "NG") {
+      return "NGN";
+    } else if (location === "GH") {
+      return "GHS";
+    }
+    return "KES";
+  };
+  const navigate = useNavigate();
+
+  const handleNav = (id: string) => {
+    navigate(`/restaurant/checkout/${id}`);
+  };
+
   return (
     <Stack
       sx={{
@@ -667,9 +701,10 @@ const OrderModal = () => {
           color: "white",
           cursor: "pointer",
         }}
+        onClick={() => handleNav(restaurant.id)}
       >
         Proceed to checkout (
-        {cart.items.reduce((acc, item) => acc + item.quantity, 0)})
+        {currency(location?.countryCode as SupportedCountry)} {total})
       </Button>
     </Stack>
   );
@@ -681,8 +716,12 @@ interface NavbarProps {
 export const Navbar = ({ search }: NavbarProps) => {
   const { location } = useLocation();
   const { cart } = useCart();
-  const { user, isAuthenticated } = useUser();
-
+  const { user, isAuthenticated, logout } = useUser();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    logout();
+    navigate("/", { replace: true });
+  };
   return (
     <Box
       component={"header"}
@@ -694,6 +733,7 @@ export const Navbar = ({ search }: NavbarProps) => {
         alignItems: "center",
         justifyContent: "space-between",
         background: "transparent",
+        backgroundColor: "white",
       }}
     >
       {/* nyamza */}
@@ -783,10 +823,20 @@ export const Navbar = ({ search }: NavbarProps) => {
             fontFamily: "montserrat",
             color: "text.disabled",
             fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1.5,
           }}
         >
           {user && isAuthenticated ? (
-            user.name
+            <>
+              {user.name}{" "}
+              <Logout
+                onClick={handleLogout}
+                sx={{ width: "20px", color: "primary.dark", cursor: "pointer" }}
+              />
+            </>
           ) : (
             <AccountCircleRounded
               sx={{ width: "30px", height: "30px", color: "secondary.main" }}
@@ -804,7 +854,6 @@ export const Footer = () => {
       component="footer"
       sx={{
         width: "100%",
-        mt: 4,
         px: { xs: 2, sm: 3, md: 4 },
         py: { xs: 2.5, sm: 3 },
         borderTop: 1,

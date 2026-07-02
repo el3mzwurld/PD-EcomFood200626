@@ -9,6 +9,7 @@ interface CartContextType {
   clearCart: () => void;
   pendingConflict: { resID: string; resName: string; item: CartItem } | null;
   resolveConflict: (proceed: boolean) => void;
+  total: number;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -106,6 +107,15 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setPendingConflict(null);
   };
 
+  const calculateTotal = (): number => {
+    const total = cart.items.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0,
+    );
+
+    return total;
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -116,6 +126,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         pendingConflict,
         resolveConflict,
         clearCart,
+        total: calculateTotal(),
       }}
     >
       {children}

@@ -9,7 +9,7 @@ export type Currency = "NGN" | "GHS" | "KES";
 export type UserLocation = {
   coords: Coordinates;
   label: string; //actual street level address e.g 12 Adeola Hopewell St. VI
-  countryCode: string; //NG
+  countryCode: SupportedCountry; //NG
   source: "search" | "pin"; //for V1 i'm only using search, but i want to widen it to pin so the user can capture locations that don't nominally exist in the GeoApify API, for example, some streets are excluded.
 };
 
@@ -57,6 +57,7 @@ export type Meal = {
   description: string;
   category: string;
   price: number;
+  photoUrl?: string | null;
 };
 
 //Cart types

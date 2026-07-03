@@ -711,7 +711,7 @@ const OrderModal = ({ restaurant }: { restaurant: Restaurant }) => {
 };
 
 interface NavbarProps {
-  handleOpen: () => void;
+  handleOpen?: () => void;
 }
 export const Navbar = ({ handleOpen }: NavbarProps) => {
   const { location } = useLocation();
@@ -769,7 +769,12 @@ export const Navbar = ({ handleOpen }: NavbarProps) => {
             fontWeight: 600,
             cursor: "pointer",
           }}
-          onClick={handleOpen}
+          onClick={() => {
+            if (!handleOpen) {
+              return;
+            }
+            handleOpen();
+          }}
         >
           <Typography variant="subtitle2" sx={{ fontSize: { xs: 8 } }}>
             Delivery to:

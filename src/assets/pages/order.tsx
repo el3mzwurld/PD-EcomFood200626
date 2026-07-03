@@ -1,10 +1,21 @@
-import { Box, Stack } from "@mui/material";
+import {
+  Box,
+  Rating,
+  Stack,
+  Step,
+  StepContent,
+  StepLabel,
+  Stepper,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Footer, Navbar } from "./menu";
 import type { Order } from "../types/types";
+import { useOrderTracking } from "../hooks/useOrder";
 
 const order_key = "nyamza:currentOrder";
+
 const Order = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -278,10 +289,159 @@ const Order = () => {
               height: "auto",
               width: { xs: "100%", md: "35%" },
             }}
-          ></Stack>
+          >
+            <OrderTracker order={order} />
+          </Stack>
         </Stack>
       </Box>
       <Footer />
+    </Box>
+  );
+};
+
+const stages = [
+  { label: "Order Placed", description: "We've received your order" },
+  { label: "Order Confirmed", description: "Restaurant confirmed your order" },
+  { label: "Preparing your food", description: "Your food is being prepared" },
+  { label: "Rider picked up", description: "A rider has your order" },
+  { label: "On the way", description: "Almost there!" },
+  { label: "Delivered", description: "Enjoy your meal! 🎉" },
+];
+
+interface OrderTrackerProps {
+  order: Order;
+}
+
+const OrderTracker = ({ order }: OrderTrackerProps) => {
+  const { activeStep, isDelivered, remainingMins } = useOrderTracking(order);
+  const [rating, setRating] = useState<number | null>(null);
+  const [rated, setRated] = useState(false);
+  const navigate = useNavigate();
+
+  const handleRating = (value: number | null) => {
+    setRating(value);
+    if (!value) return;
+
+    const saved = localStorage.getItem("nyamza:currentOrder");
+    if (saved) {
+      const savedOrder = JSON.parse(saved);
+      localStorage.setItem(
+        "nyamza:currentOrder",
+        JSON.stringify({ ...savedOrder, driverRating: value }),
+      );
+    }
+
+    setRated(true);
+
+    setTimeout(() => navigate("/restaurants"), 4000);
+  };
+  return (
+    <Box
+      sx={{
+        width: "100%",
+        backgroundColor: "white",
+        borderRadius: "12px",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+        p: { xs: 2.5, md: 3 },
+        fontFamily: "montserrat",
+      }}
+    >
+      {/* title */}
+      <Typography
+        variant="body1"
+        sx={{ fontFamily: "montserrat", fontWeight: 600 }}
+      >
+        Order Tracking
+      </Typography>
+      {!isDelivered && (
+        <Typography
+          variant="caption"
+          sx={{
+            fontFamily: "montserrat",
+            color: "primary.dark",
+            fontWeight: 600,
+          }}
+        >
+          {remainingMins} min{remainingMins !== 1 ? "s" : ""} remaining
+        </Typography>
+      )}
+      {/* stepper */}
+      <Stepper activeStep={activeStep} orientation="vertical">
+        {stages.map((s, index) => (
+          <Step key={s.label} completed={index < activeStep}>
+            <StepLabel>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontFamily: "montserrat",
+                  fontWeight: index === activeStep ? 600 : 400,
+                  color: index <= activeStep ? "black" : "text.disabled",
+                }}
+              >
+                {s.label}
+              </Typography>
+            </StepLabel>
+            <StepContent>
+              <Typography
+                variant="caption"
+                sx={{ fontFamily: "montserrat", color: "text.disabled" }}
+              >
+                {s.description}
+              </Typography>
+            </StepContent>
+          </Step>
+        ))}
+      </Stepper>
+
+      {/* post delivery — rating prompt */}
+      {isDelivered && (
+        <Stack
+          spacing={1.5}
+          sx={{
+            mt: 3,
+            pt: 2,
+            borderTop: "2px solid #eeebeb",
+            alignItems: "center",
+          }}
+        >
+          {!rated ? (
+            <>
+              <Typography
+                variant="body2"
+                sx={{ fontFamily: "montserrat", fontWeight: 600 }}
+              >
+                How was your delivery?
+              </Typography>
+              <Rating
+                value={rating}
+                onChange={(_, value) => handleRating(value)}
+                size="large"
+              />
+              <Typography
+                variant="caption"
+                sx={{ color: "text.disabled", fontFamily: "montserrat" }}
+              >
+                Rate your rider
+              </Typography>
+            </>
+          ) : (
+            <>
+              <Typography
+                variant="body2"
+                sx={{ fontFamily: "montserrat", fontWeight: 600 }}
+              >
+                Thanks for your feedback!
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{ color: "text.disabled", fontFamily: "montserrat" }}
+              >
+                Redirecting you back to restaurants...
+              </Typography>
+            </>
+          )}
+        </Stack>
+      )}
     </Box>
   );
 };

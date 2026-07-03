@@ -21,6 +21,7 @@ import type {
   CartItem,
   Currency,
   LocationResult,
+  Order,
   Restaurant,
   SupportedCountry,
 } from "../types/types";
@@ -36,19 +37,19 @@ import {
 import paystack_icon from "../img/Paystack_idIi-h8rZ0_0.svg";
 import { useRestaurant } from "../context/restaurantContext";
 import { useSearch } from "../hooks/useSearch";
+import { usePayStack } from "../hooks/usePaystack";
 //checkout page
 const Checkout = () => {
   // user
-  const { authError } = useUser();
 
   const { id } = useParams();
   const resID = id as string;
   const navigate = useNavigate();
-  const { cart } = useCart();
+  const { cart, total, clearCart } = useCart();
   const { getRestaurantById, isLoading } = useRestaurant();
   const [isSnackbarOpen, setSnackbarOpen] = useState(false);
-  const { isAuthenticated } = useUser();
-
+  const { isAuthenticated, authError, user } = useUser();
+  const { location } = useLocation();
   useEffect(() => {
     if (authError) {
       setSnackbarOpen(true);
@@ -78,13 +79,17 @@ const Checkout = () => {
   // check on mount if the cart ID matches up to the same restaurant the user tried to order from
   useEffect(() => {
     if (cart.restaurantID !== resID || cart.items.length === 0) {
-      navigate("/restaurants", { replace: true });
+      const navDelayed = setTimeout(() => {
+        navigate("/restaurants", { replace: true });
+      }, 400);
       return;
     }
   }, [cart.restaurantID, cart.items.length, resID, navigate]);
   // modal controls
   const [open, SetOpen] = useState(false);
-
+  // delivery instructions
+  const [activeLocation, setActiveLocation] = useState<"LAD" | "DBY">("LAD");
+  const [driverInstructions, setDriverInstructions] = useState("");
   const handleOpen = () => {
     SetOpen(true);
   };
@@ -92,15 +97,48 @@ const Checkout = () => {
     SetOpen(false);
   };
 
+  const { pay } = usePayStack({
+    email: user?.email ?? "nyamza.guest@gmail.com",
+    amount: total,
+    countryCode: location?.countryCode as SupportedCountry,
+    onSuccess: (reference) => {
+      const order: Order = {
+        id: crypto.randomUUID(),
+        restaurantID: resID,
+        restaurantName: restaurant?.name ?? "",
+        items: cart.items,
+        total,
+        deliveryAddress: location?.label ?? "",
+        deliveryCoords: location?.coords ?? { lat: 0, lng: 0 },
+        driverInstructions: `${activeLocation === "LAD" ? "Leave at door" : "Deliver in person"}. ${driverInstructions}`,
+        createdAt: Date.now(),
+        etaMinutes: restaurant?.deliveryTimeMins ?? 0,
+        paystackReference: reference,
+      };
+      localStorage.setItem("nyamza:currentOrder", JSON.stringify(order));
+      clearCart();
+      navigate(`/order/${order.id}`);
+    },
+    onClose: () => console.log("Payment closed"),
+  });
   if (!restaurant) {
     return null;
   }
+
+  // paystack object
+
   const handleAuthCheck = (): boolean => {
     if (isAuthenticated) {
       return true;
     }
-    navigate("/auth");
     return false;
+  };
+
+  const handleCheckout = () => {
+    if (!handleAuthCheck) {
+      navigate("/auth");
+    }
+    pay();
   };
 
   return (
@@ -141,7 +179,13 @@ const Checkout = () => {
             }}
           >
             {/* delivery details component :  */}
-            <DeliveryDetails handleOpen={handleOpen} />
+            <DeliveryDetails
+              handleOpen={handleOpen}
+              activeLocation={activeLocation}
+              setActiveLocation={setActiveLocation}
+              deliveryInstructions={driverInstructions}
+              setDeliveryInstructions={setDriverInstructions}
+            />
             <Button
               variant="contained"
               sx={{
@@ -150,7 +194,7 @@ const Checkout = () => {
                 gap: 1.5,
                 alignItems: "center",
               }}
-              onClick={() => handleAuthCheck()}
+              onClick={() => handleCheckout()}
             >
               <Typography
                 variant="caption"
@@ -207,8 +251,20 @@ const Checkout = () => {
 //
 //
 //delivery details
-const DeliveryDetails = ({ handleOpen }: { handleOpen: () => void }) => {
-  const [activeLocation, setActiveLocation] = useState<"LAD" | "DBY">("LAD");
+interface DeliveryProps {
+  handleOpen: () => void;
+  activeLocation: "LAD" | "DBY";
+  setActiveLocation: React.Dispatch<React.SetStateAction<"LAD" | "DBY">>;
+  deliveryInstructions: string;
+  setDeliveryInstructions: React.Dispatch<React.SetStateAction<string>>;
+}
+const DeliveryDetails = ({
+  handleOpen,
+  activeLocation,
+  setActiveLocation,
+  deliveryInstructions,
+  setDeliveryInstructions,
+}: DeliveryProps) => {
   const { location } = useLocation();
   const isActiveLAD = Boolean(activeLocation === "LAD");
   const isActiveDBY = Boolean(activeLocation === "DBY");
@@ -218,7 +274,7 @@ const DeliveryDetails = ({ handleOpen }: { handleOpen: () => void }) => {
       spacing={1.5}
       sx={{
         width: "100%",
-        height: { xs: 275 },
+        minHeight: { xs: 275 },
         borderRadius: 1.2,
         border: "1px solid",
         borderColor: "text.disabled",
@@ -275,7 +331,7 @@ const DeliveryDetails = ({ handleOpen }: { handleOpen: () => void }) => {
         spacing={{ xs: 1.5 }}
         sx={{
           width: "100%",
-          alignItems: "center",
+          alignItems: "start",
           justifyContent: "space-between",
           px: 0.45,
           py: 0.5,
@@ -291,6 +347,47 @@ const DeliveryDetails = ({ handleOpen }: { handleOpen: () => void }) => {
           page={"DBY"}
           setActive={setActiveLocation}
         />
+        <Box
+          component={"input"}
+          type="text"
+          maxLength={100}
+          name="del-ins"
+          placeholder="Delivery Instructions"
+          sx={{
+            width: "100%",
+            height: { xs: 40 },
+            alignItems: "center",
+            justifyContent: "start",
+            px: 1.8,
+            borderRadius: 0.8,
+            border: "1.5px solid",
+            gap: 1,
+            fontFamily: "montserrat",
+            cursor: "pointer",
+            fontSize: 12,
+
+            "::placeholder": {
+              color: "text.disabled",
+            },
+            ":focus": {
+              outline: "none",
+            },
+          }}
+          value={deliveryInstructions}
+          onChange={(e) => setDeliveryInstructions(e.target.value)}
+        ></Box>
+        <Typography
+          variant="caption"
+          sx={{
+            fontSize: 10,
+            color:
+              deliveryInstructions.length < 90 ? "text.disabled" : "error.main",
+          }}
+        >
+          {deliveryInstructions
+            ? `${deliveryInstructions.length}/100`
+            : "100/100"}
+        </Typography>
       </Stack>
     </Stack>
   );

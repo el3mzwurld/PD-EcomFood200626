@@ -711,9 +711,9 @@ const OrderModal = ({ restaurant }: { restaurant: Restaurant }) => {
 };
 
 interface NavbarProps {
-  search?: boolean;
+  handleOpen: () => void;
 }
-export const Navbar = ({ search }: NavbarProps) => {
+export const Navbar = ({ handleOpen }: NavbarProps) => {
   const { location } = useLocation();
   const { cart } = useCart();
   const { user, isAuthenticated, logout } = useUser();
@@ -769,6 +769,7 @@ export const Navbar = ({ search }: NavbarProps) => {
             fontWeight: 600,
             cursor: "pointer",
           }}
+          onClick={handleOpen}
         >
           <Typography variant="subtitle2" sx={{ fontSize: { xs: 8 } }}>
             Delivery to:
@@ -827,6 +828,7 @@ export const Navbar = ({ search }: NavbarProps) => {
             alignItems: "center",
             justifyContent: "center",
             gap: 1.5,
+            fontSize: { xs: 10 },
           }}
         >
           {user && isAuthenticated ? (
@@ -834,12 +836,28 @@ export const Navbar = ({ search }: NavbarProps) => {
               {user.name}{" "}
               <Logout
                 onClick={handleLogout}
-                sx={{ width: "20px", color: "primary.dark", cursor: "pointer" }}
+                sx={{
+                  width: { xs: 13, md: 20 },
+                  color: "primary.dark",
+                  cursor: "pointer",
+                }}
               />
             </>
           ) : (
             <AccountCircleRounded
-              sx={{ width: "30px", height: "30px", color: "secondary.main" }}
+              sx={{
+                width: "30px",
+                height: "30px",
+                color: "secondary.main",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                {
+                  const sendtoAuth = setTimeout(() => {
+                    navigate("/auth");
+                  }, 300);
+                }
+              }}
             />
           )}
         </Typography>

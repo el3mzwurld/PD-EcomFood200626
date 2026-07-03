@@ -4,6 +4,7 @@ import Restaurants from "../pages/restaurants";
 import Menu from "../pages/menu";
 import Checkout from "../pages/checkout";
 import Authenticator from "../pages/authentication";
+import Order from "../pages/order";
 
 export const AppRoutes = () => {
   return (
@@ -13,6 +14,7 @@ export const AppRoutes = () => {
       <Route path="/restaurant/:id" element={<Menu />}></Route>
       <Route path="/restaurant/checkout/:id" element={<Checkout />}></Route>
       <Route path="/auth" element={<Authenticator />}></Route>
+      <Route path="/order/:id" element={<Order />}></Route>
     </Routes>
   );
 };

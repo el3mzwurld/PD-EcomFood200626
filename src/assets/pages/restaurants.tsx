@@ -10,10 +10,17 @@ import { motion } from "motion/react";
 
 // images
 import notfound from "../img/undraw_no-data_ig65.svg";
-import loader from "../img/loader.svg";
 import curry from "../img/food/curry.jpg";
+import burger from "../img/food/burger.jpg";
+import pizza from "../img/food/pizza.jpg";
+import fastfood from "../img/food/fastfood.jpg";
+import chinese from "../img/food/chinese.jpg";
+import local from "../img/food/local.jpg";
+import cont from "../img/food/continenal.jpg";
+
 import { string } from "yup";
 import { useEffect, useState } from "react";
+import { LocationModal } from "./checkout";
 
 interface CuisineData {
   name: string;
@@ -37,14 +44,14 @@ const Restaurants = () => {
   const theme = useTheme();
 
   const filterCats: Record<Cuisine, CuisineData> = {
-    "Fast Food": { name: "Fast Food", img: curry },
+    "Fast Food": { name: "Fast Food", img: fastfood },
     Nigerian: {
       name: location
         ? location.countryCode === "NG"
           ? "Local"
           : "Nigerian"
         : "Nigerian",
-      img: curry,
+      img: local,
     },
     Kenyan: {
       name: location
@@ -52,7 +59,7 @@ const Restaurants = () => {
           ? "Local"
           : "Kenyan"
         : "Kenyan",
-      img: curry,
+      img: local,
     },
     Ghanaian: {
       name: location
@@ -60,42 +67,63 @@ const Restaurants = () => {
           ? "Local"
           : "Ghanian"
         : "Ghanian",
-      img: curry,
+      img: local,
     },
-    Italian: { name: "Pizza", img: curry },
-    Chinese: { name: "Chinese", img: curry },
+    Italian: { name: "Pizza", img: pizza },
+    Chinese: { name: "Chinese", img: chinese },
     Indian: { name: "Indian", img: curry },
-    American: { name: "Burger", img: curry },
-    Continental: { name: "Oriental", img: curry },
+    American: { name: "Burger", img: burger },
+    Continental: { name: "Oriental", img: cont },
+  };
+
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
   };
   return (
     <Box sx={{ width: "100%", minHeight: "100vh" }}>
-      <Navbar />
+      <Navbar handleOpen={handleOpen} />
       <Stack
+        component={motion.div}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 2, ease: "easeIn" }}
         direction={"row"}
         sx={{
-          height: { md: 85 },
+          height: { xs: 120, md: 85 },
           width: "100%",
           alignItems: "center",
           justifyContent: "space-evenly",
           py: { md: 1.5 },
           px: { md: 1.5 },
+          position: "relative",
+          [theme.breakpoints.down("md")]: {
+            overflowX: "auto",
+            gap: 1.5,
+            px: 2,
+          },
         }}
       >
+        {/* filters */}
         {Object.entries(filterCats).map(([cuisine, data]) => {
           return (
             <Box
               sx={{
-                width: { md: 70 },
-                height: { md: 70 },
+                width: { xs: 80, md: 70 },
+                height: { xs: 80, md: 70 },
                 borderRadius: 15,
-                backgroundColor: "black",
+                backgroundColor: "secondary.dark",
                 position: "relative",
                 zIndex: 2,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 cursor: "pointer",
+                flex: "0 0 auto",
               }}
               onClick={() => {
                 const food = cuisine as Cuisine;
@@ -107,8 +135,8 @@ const Restaurants = () => {
                   position: "absolute",
                   bottom: -5,
                   right: -10,
-                  p: { md: 0.2 },
-                  px: { md: 1 },
+                  p: { xs: 0.5, md: 0.2 },
+                  px: { xs: 1, md: 1.2 },
                   border: "1px solid",
                   backgroundColor: "white",
                   borderColor: "primary.dark",
@@ -128,6 +156,33 @@ const Restaurants = () => {
             </Box>
           );
         })}
+        <Typography
+          sx={{
+            position: { md: "absolute" },
+            top: 5,
+            right: 5,
+            height: { xs: 25, md: 20 },
+            width: { xs: 25, md: 20 },
+            [theme.breakpoints.down("md")]: {
+              flexShrink: 0,
+            },
+            border: "1px solid",
+            backgroundColor: "white",
+            borderColor: "primary.dark",
+            borderRadius: "100px",
+            fontSize: { xs: 10 },
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          //clear filters
+          onClick={() => {
+            setFilreredRestaurants(restaurants);
+          }}
+        >
+          x
+        </Typography>
       </Stack>
       <Box
         sx={{
@@ -153,10 +208,14 @@ const Restaurants = () => {
               opacity: 0.8,
             }}
           >
-            <NotFound fil_restaurants={filteredRestaurants} />
+            <NotFound
+              fil_restaurants={filteredRestaurants}
+              restaurants={restaurants}
+            />
           </Box>
         )}
       </Box>
+      <LocationModal handleClose={handleClose} open={open} />
       <Footer />
     </Box>
   );
@@ -202,6 +261,10 @@ const RestaurantCard = ({ restaurant, location }: CardProps) => {
 
   return (
     <Stack
+      component={motion.div}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1.2, delay: 0.1, ease: "easeIn" }}
       sx={{
         width: { xs: "100%" },
         height: { xs: 230, md: 280 },
@@ -218,7 +281,7 @@ const RestaurantCard = ({ restaurant, location }: CardProps) => {
       <Box
         sx={{
           width: "100%",
-          height: "70%",
+          height: "100%",
           backgroundColor: restaurant.photoURL ? "none" : "gray",
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
@@ -233,15 +296,16 @@ const RestaurantCard = ({ restaurant, location }: CardProps) => {
         }}
       >
         {restaurant.photoURL && (
-          <img
+          <Box
+            component={"img"}
             src={restaurant.photoURL}
-            style={{
-              width: "80%",
-              height: "80%",
+            sx={{
+              width: { xs: "70%", md: "80%" },
+              height: { xs: "70%", md: "80%" },
               objectFit: "cover",
               objectPosition: "center",
             }}
-          ></img>
+          ></Box>
         )}
       </Box>
       {/* restaurant info */}
@@ -267,7 +331,13 @@ const RestaurantCard = ({ restaurant, location }: CardProps) => {
   );
 };
 
-const NotFound = ({ fil_restaurants }: { fil_restaurants: Restaurant[] }) => {
+const NotFound = ({
+  fil_restaurants,
+  restaurants,
+}: {
+  fil_restaurants: Restaurant[];
+  restaurants: Restaurant[];
+}) => {
   const theme = useTheme();
 
   return (
@@ -299,8 +369,10 @@ const NotFound = ({ fil_restaurants }: { fil_restaurants: Restaurant[] }) => {
           fontWeight: 500,
         }}
       >
-        {fil_restaurants.length === 0 &&
-          "No restaurants found for this category"}
+        {restaurants.length !== 0
+          ? fil_restaurants.length === 0 &&
+            "No restaurants found for this category."
+          : "Sorry, we're not available in this area."}
       </Typography>
     </Stack>
   );

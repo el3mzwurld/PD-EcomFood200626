@@ -127,16 +127,10 @@ const Checkout = () => {
 
   // paystack object
 
-  const handleAuthCheck = (): boolean => {
-    if (isAuthenticated) {
-      return true;
-    }
-    return false;
-  };
-
   const handleCheckout = () => {
-    if (!handleAuthCheck) {
-      navigate("/auth");
+    if (!isAuthenticated) {
+      navigate("/auth", { replace: true });
+      return;
     }
     pay();
   };
@@ -643,13 +637,11 @@ const AccordionCard = ({ item, getCurrency }: CardProps) => {
 //
 //
 //location modal
-const LocationModal = ({
+export const LocationModal = ({
   open,
-  handleOpen,
   handleClose,
 }: {
   open: boolean;
-  handleOpen: () => void;
   handleClose: () => void;
 }) => {
   const [place, setPlace] = useState<LocationResult | null>(null);
@@ -662,6 +654,7 @@ const LocationModal = ({
       return;
     }
     setLocation(place);
+    handleClose();
   };
   return (
     <Dialog open={open} onClose={handleClose}>
@@ -692,8 +685,12 @@ const LocationModal = ({
                     justifyContent: "space-between",
                     alignItems: "center",
                     backgroundColor: "text.disabled",
+                    cursor: "pointer",
                   }}
-                  onClick={() => setPlace(m)}
+                  onClick={() => {
+                    setPlace(m);
+                    setQuery(place?.label ?? "");
+                  }}
                 >
                   <Typography variant="subtitle2" sx={{ fontSize: { xs: 10 } }}>
                     {m.label}
@@ -708,14 +705,7 @@ const LocationModal = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button
-          onClick={() => {
-            handleSetLocation();
-            handleClose();
-          }}
-        >
-          Set Location
-        </Button>
+        <Button onClick={handleSetLocation}>Confirm</Button>
       </DialogActions>
     </Dialog>
   );

@@ -5,7 +5,7 @@ import type { Restaurant, SupportedCountry } from "../types/types";
 import type { RawPlace } from "./geoapify";
 import { seededRandom } from "./randomizer";
 import { resolveCuisine } from "./resolveCuisine";
-import placeholder from "../img/placeholder.png";
+import placeholder from "../img/no-img.jpg";
 export const enrichRestaurant = (
   raw: RawPlace,
   route: { distanceKM: number; travelTimeSecs: number; available: boolean },

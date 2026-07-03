@@ -33,7 +33,7 @@ export type Cuisine =
   | "Indian"
   | "American"
   | "Fast Food"
-  | "Continental"; // catch-all for anything unrecognised
+  | "Continental";
 
 //restaurant
 export type Restaurant = {

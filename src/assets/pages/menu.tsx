@@ -392,7 +392,7 @@ const MealCard = ({ meal, restaurant }: MealCardProps) => {
         {meal.photoUrl ? (
           <img
             src={meal.photoUrl}
-            style={{ width: "100%", height: "100%" }}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
           ></img>
         ) : null}
       </Box>

@@ -101,12 +101,6 @@ export const nigerianMenu: MealTemplate[] = [
     category: "Drinks",
   },
   {
-    name: "Sprite",
-    description: "Chilled 50cl bottle",
-    price: 1000,
-    category: "Drinks",
-  },
-  {
     name: "Fanta Orange",
     description: "Chilled 50cl bottle",
     price: 1000,
@@ -125,12 +119,6 @@ export const nigerianMenu: MealTemplate[] = [
     category: "Drink",
   },
   {
-    name: "Kunu",
-    description: "An absolute sunday classic, with a gingery twist",
-    price: 1200,
-    category: "Drink",
-  },
-  {
     name: "Freshly Squeezed Orange Juice",
     description: "Cold pressed, bottled chilled, just for you",
     price: 1500,
@@ -139,12 +127,6 @@ export const nigerianMenu: MealTemplate[] = [
   {
     name: "Chapman",
     description: "Your luxury cocktail, chilled. Just the way you like",
-    price: 2000,
-    category: "Drink",
-  },
-  {
-    name: "Sobolo Special",
-    description: "Premium blend, pineapple and cloves",
     price: 2000,
     category: "Drink",
   },

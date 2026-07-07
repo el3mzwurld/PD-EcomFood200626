@@ -186,8 +186,9 @@ export const useMenu = (
     const random = seededRandom(restaurantID);
 
     const fetchMealImages = async (mealName: string) => {
+      const name = `${mealName} menu item`;
       const response = await fetch(
-        `https://api.pexels.com/v1/search?query=${encodeURIComponent(mealName)}&per_page=1`,
+        `https://api.pexels.com/v1/search?query=${encodeURIComponent(name)}&per_page=1`,
         {
           headers: {
             Authorization: pexels_api_key,
@@ -197,7 +198,7 @@ export const useMenu = (
 
       const data = await response.json();
 
-      const image = data.photos?.[0]?.src?.medium ?? null;
+      const image = data.photos?.[0]?.src?.large ?? null;
       return image;
     };
     //local menu
@@ -206,7 +207,6 @@ export const useMenu = (
         ...meal,
         id: `${restaurantID}-${meal.name.toLowerCase().replace(/\s+/g, "-")}`,
         restaurantID: restaurantID,
-        photoUrl: `https://www.pexels.com/search/${meal.name}/`,
       };
     };
     //shuffle menu order
@@ -216,7 +216,7 @@ export const useMenu = (
       return shuffledMeals.map((meal) => localMealNormalize(meal));
     };
 
-    const createLocalMenu = () => {
+    const createLocalMenu = async () => {
       let dataset: MealTemplate[] | undefined;
 
       // check what the cuisine is and match the cuisine to the specific meal mapper
@@ -233,7 +233,19 @@ export const useMenu = (
         return;
       }
 
-      setMenu(shuffleAndNormalizeMenu(dataset));
+      const shuffledMeals = shuffleAndNormalizeMenu(dataset);
+      const images = await Promise.all(
+        shuffledMeals.map((m) => fetchMealImages(m.name)),
+      );
+
+      const meals: Meal[] = shuffledMeals.map((meal, index) => {
+        return {
+          ...meal,
+          photoUrl: images[index] as string,
+        };
+      });
+
+      setMenu(meals);
     };
 
     //api menu

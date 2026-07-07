@@ -10,38 +10,135 @@ import { useEffect, useState } from "react";
 
 const apiCuisineDishes: Partial<Record<Cuisine, string[]>> = {
   Italian: [
-    "Spaghetti Carbonara",
-    "Pizza",
-    "Tiramisu",
-    "Risotto",
-    "Penne Arrabiata",
-    "Spaghetti",
+    "Spaghetti Bolognese",
+    "Spicy Arrabiata Penne",
     "Vegan Lasagna",
-    "Squash linguine",
+    "Mediterranean Pasta Salad",
+    "Potato Gratin with Chicken",
     "Rigatoni with fennel sausage sauce",
+    "Chicken Alfredo Primavera",
+    "Osso Buco alla Milanese",
+    "Ribollita",
+    "Salmon Prawn Risotto",
     "Fettucine alfredo",
+    "Pilchard puttanesca",
+    "Venetian Duck Ragu",
+    "Chilli prawn linguine",
+    "Lasagne",
+    "Spinach & Ricotta Cannelloni",
+    "Squash linguine",
+    "Budino Di Ricotta",
+    "Spaghetti alla Carbonara",
+    "Pizza Express Margherita",
+    "Fettuccine Alfredo",
   ],
   Chinese: [
     "Kung Pao Chicken",
+    "Kung Po Prawns",
+    "Ma Po Tofu",
+    "Wontons",
     "Sweet and Sour Pork",
-    "Fried Rice",
-    "Dim Sum",
-    "Peking Duck",
+    "Szechuan Beef",
+    "General Tsos Chicken",
+    "Beef Lo Mein",
+    "Shrimp Chow Fun",
+    "Hot and Sour Soup",
+    "Egg Drop Soup",
+    "Chicken Congee",
+    "Chinese Orange Chicken",
+    "Beef and Broccoli Stir-Fry",
+    "Chicken Fried Rice",
+    "Singapore Noodles with Shrimp",
+    "Silken Tofu with Sesame Soy Sauce",
+    "Egg Foo Young",
+    "Sichuan Style Stir-Fried Chinese Long Beans",
+    "Chinese Tomato Egg Stir Fry",
   ],
   American: [
-    "Beef Burger",
-    "BBQ Ribs",
-    "Mac and Cheese",
-    "Club Sandwich",
-    "Buffalo Wings",
+    "Big Mac",
+    "Chick-Fil-A Sandwich",
+    "BBQ Pork Sloppy Joes",
+    "Buffalo Chicken",
+    "Chicken Fajita Mac and Cheese",
+    "Chicken Enchilada Casserole",
+    "Chicken Pot Pie",
+    "Clam chowder",
+    "New York cheesecake",
+    "Key Lime Pie",
+    "Choc Chip Pecan Pie",
+    "Peanut Butter Cheesecake",
+    "Apple Frangipan Tart",
+    "Banana Pancakes",
+    "American Pancakes",
+    "Chocolate Brownie",
   ],
   Indian: [
-    "Chicken Tikka Masala",
-    "Butter Chicken",
-    "Biryani",
-    "Palak Paneer",
-    "Lamb Rogan Josh",
+    "Dal fry",
+    "Chicken Handi",
+    "Lamb Biryani",
+    "Tandoori chicken",
+    "Baingan Bharta",
+    "Lamb Rogan josh",
+    "Recheado Masala Fish",
+    "Nutty Chicken Curry",
+    "Matar Paneer",
+    "Kidney Bean Curry",
+    "Smoked Haddock Kedgeree",
+    "Bread omelette",
+    "Chicken Mandi",
+    "Beef Mandi",
   ],
+};
+const ghanaPriceMultiplier = 0.0068;
+const kenyaPriceMultiplier = 0.084;
+const pexels_api_key =
+  "OixvBMtlsxC23FN6vYVTAMZx7GRmCWRVzn86TWvJH1WWXDl02iyENJ9S";
+
+const randomMealTier = (): "Starter" | "Mains" => {
+  const Arr: ("Starter" | "Mains")[] = ["Starter", "Mains"];
+  const rand_index = Math.floor(Math.random() * Arr.length);
+
+  return Arr[rand_index];
+};
+
+const mealPricer = (resID: string, country_code: SupportedCountry): number => {
+  const meal_cat = randomMealTier();
+  let price = 0;
+  let normalized_price = price;
+  const random = seededRandom(resID);
+  if (meal_cat === "Starter") {
+    const min = 1000;
+    const max = 3000;
+    price = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    if (country_code === "NG") {
+      normalized_price = price;
+      return Number(normalized_price.toFixed(0));
+    } else if (country_code === "GH") {
+      normalized_price = price * ghanaPriceMultiplier;
+      return Number(normalized_price.toFixed(0));
+    } else {
+      normalized_price = price * kenyaPriceMultiplier;
+      return Number(normalized_price.toFixed(0));
+    }
+  } else if (meal_cat === "Mains") {
+    const min = 2000;
+    const max = 10000;
+    price = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    if (country_code === "NG") {
+      normalized_price = price;
+      return Number(normalized_price.toFixed(0));
+    } else if (country_code === "GH") {
+      normalized_price = price * ghanaPriceMultiplier;
+      return Number(normalized_price.toFixed(0));
+    } else {
+      normalized_price = price * kenyaPriceMultiplier;
+      return Number(normalized_price.toFixed(0));
+    }
+  }
+
+  return normalized_price;
 };
 
 interface MealDBResponse {
@@ -49,19 +146,24 @@ interface MealDBResponse {
   strMeal: string;
   strCategory: string;
   strArea: string;
+  strMealThumb: string;
 }
 
 //helper function to map cuisine to the Meal type
 
-const mealDBMapper = (meal: MealDBResponse, restaurantID: string): Meal => {
+const mealDBMapper = (
+  meal: MealDBResponse,
+  restaurantID: string,
+  country_Code: SupportedCountry,
+): Meal => {
   return {
     id: `${restaurantID}-${meal.idMeal}`,
     restaurantID: restaurantID,
     name: meal.strMeal,
     description: `A classic ${meal.strCategory.toLowerCase()} dish - made in ${meal.strArea.toLowerCase()}, straight to your doorstep.`,
-    category: "Mains",
-    price: 0,
-    photoUrl: null,
+    category: randomMealTier(),
+    price: mealPricer(restaurantID, country_Code),
+    photoUrl: meal.strMealThumb,
   };
 };
 
@@ -83,12 +185,28 @@ export const useMenu = (
 
     const random = seededRandom(restaurantID);
 
+    const fetchMealImages = async (mealName: string) => {
+      const response = await fetch(
+        `https://api.pexels.com/v1/search?query=${encodeURIComponent(mealName)}&per_page=1`,
+        {
+          headers: {
+            Authorization: pexels_api_key,
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      const image = data.photos?.[0]?.src?.medium ?? null;
+      return image;
+    };
     //local menu
     const localMealNormalize = (meal: MealTemplate): Meal => {
       return {
         ...meal,
         id: `${restaurantID}-${meal.name.toLowerCase().replace(/\s+/g, "-")}`,
         restaurantID: restaurantID,
+        photoUrl: `https://www.pexels.com/search/${meal.name}/`,
       };
     };
     //shuffle menu order
@@ -140,11 +258,9 @@ export const useMenu = (
         const meals = search_results
           .filter((meal) => meal !== null)
           .map((meal) => {
-            const mappedMeal = mealDBMapper(meal, restaurantID);
-            const price = 100; //TODO : i need to add currency-aware price generation ::: he price itself for these api generated meals will be randomized using the seededRandom generator...but what'll happen is this
-            // the price will be unified across the page and will change according to the currency the user picks.
+            const mappedMeal = mealDBMapper(meal, restaurantID, countryCode);
 
-            return { ...mappedMeal, price };
+            return { ...mappedMeal };
           });
         // if no meal was found, we return Menu not available
         if (meals.length === 0) {

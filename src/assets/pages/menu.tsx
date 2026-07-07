@@ -5,35 +5,25 @@ import {
 } from "react-router-dom";
 import type {
   CartItem,
-  Cuisine,
   Currency,
   Meal,
   Restaurant,
   SupportedCountry,
 } from "../types/types";
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Grid,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Box, Button, Grid, Stack, Typography, useTheme } from "@mui/material";
 import { useLocation } from "../context/locationContext";
 import { useUser } from "../context/userContext";
 import {
   AccountCircleRounded,
   ArrowBack,
   Logout,
-  ShoppingCart,
   ShoppingCartRounded,
 } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useMenu } from "../hooks/useMenu";
 import { useRestaurant } from "../context/restaurantContext";
 import { useEffect, useState } from "react";
-import { m, motion } from "motion/react";
+import { motion } from "motion/react";
 import { useCart } from "../context/cartContext";
 import emptyCart from "../img/emptycart.svg";
 
@@ -58,7 +48,6 @@ const Menu = () => {
   //catch all the data we're passing from the restaurants page
   const { id } = useParams();
   const restaurantID = id as string;
-  const loc = RouterLocation();
   const navigate = useNavigate();
   const { location } = useLocation();
   const {
@@ -78,7 +67,7 @@ const Menu = () => {
   );
 
   useEffect(() => {
-    if (resLoading) return;
+    if (resLoading || restaurants.length === 0) return;
 
     if (!restaurant) {
       navigate("/restaurants", { replace: true });
@@ -363,7 +352,7 @@ const MealCard = ({ meal, restaurant }: MealCardProps) => {
     };
   };
   // cart context
-  const { addItem, cart, clearCart, updateQty } = useCart();
+  const { addItem, cart, updateQty } = useCart();
   // increment
   const handleInc = () => {
     setQuantity((prev) => prev + 1);
@@ -385,7 +374,6 @@ const MealCard = ({ meal, restaurant }: MealCardProps) => {
       sx={{
         width: { xs: "75%", md: "100%" },
         height: { xs: 255, md: 260 },
-        // backgroundColor: "gray",
         borderRadius: 1.5,
       }}
     >
@@ -395,9 +383,19 @@ const MealCard = ({ meal, restaurant }: MealCardProps) => {
           width: "100%",
           minHeight: "60%",
           maxHeight: "70%",
-          backgroundColor: "gray",
+          backgroundColor:
+            meal.photoUrl || meal.photoUrl === undefined || null
+              ? "none"
+              : "gray",
         }}
-      ></Box>
+      >
+        {meal.photoUrl ? (
+          <img
+            src={meal.photoUrl}
+            style={{ width: "100%", height: "100%" }}
+          ></img>
+        ) : null}
+      </Box>
       {/* details */}
       <Stack
         sx={{
@@ -702,6 +700,7 @@ const OrderModal = ({ restaurant }: { restaurant: Restaurant }) => {
           cursor: "pointer",
         }}
         onClick={() => handleNav(restaurant.id)}
+        disabled={Boolean(cart.items.length === 0)}
       >
         Proceed to checkout (
         {currency(location?.countryCode as SupportedCountry)} {total})
@@ -793,6 +792,12 @@ export const Navbar = ({ handleOpen }: NavbarProps) => {
           alignItems: "center",
           gap: 1.5,
           justifyContent: "center",
+        }}
+        onClick={() => {
+          if (cart.items.length === 0) return;
+
+          const restaurantID = cart.restaurantID;
+          navigate(`/restaurant/${restaurantID}`);
         }}
       >
         <Stack

@@ -9,6 +9,29 @@ import { useSearch } from "../hooks/useSearch";
 import { useLocation } from "../context/locationContext";
 import { useNavigate } from "react-router-dom";
 
+// images
+import picnic from "../img/landingCards/pexels-youngafrikanna-20554505.jpg";
+import restaurant from "../img/landingCards/pexels-prosper-buka-1289782307-28736731.jpg";
+import akara from "../img/landingCards/pexels-gabrielbodhi-28371787.jpg";
+import { motion } from "motion/react";
+import { Footer } from "./menu";
+const Cards = [
+  {
+    image: picnic,
+    mainText: "Food for the special memories.",
+    subText: "Order food for the occasion.",
+  },
+  {
+    image: restaurant,
+    mainText: "Get food from those favorite restaurants close to you.",
+    subText: "Let us plug you into the nyamza life.",
+  },
+  {
+    image: akara,
+    mainText: "Local dishes, right on your doorstep.",
+    subText: "Whatever your tastebuds are feeling, we can find for you.",
+  },
+];
 const LandingPage = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [query, setQuery] = useState("");
@@ -46,6 +69,7 @@ const LandingPage = () => {
           position: "relative",
           zIndex: 0,
           backgroundColor: "transparent",
+          overflow: "hidden",
         }}
       >
         <Stack
@@ -186,6 +210,29 @@ const LandingPage = () => {
           />
         </Box>
       </Box>
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        spacing={{ xs: 2, md: 2 }}
+        sx={{
+          width: "100%",
+          height: { xs: "auto", md: "auto" },
+          px: { xs: 1.5, md: 1.5 },
+          alignItems: "center",
+          justifyContent: "center",
+          gap: { lg: 3 },
+          py: 5,
+        }}
+      >
+        {Cards.map((card, index) => (
+          <AdCard
+            image={card.image}
+            main_text={card.mainText}
+            sub_text={card.subText}
+            key={index}
+          />
+        ))}
+      </Stack>
+      <Footer />
     </Box>
   );
 };
@@ -213,6 +260,7 @@ const SearchBar = ({
         width: { xs: "100%", lg: "60%" },
         height: "auto",
         py: 2,
+        px: { md: 2 },
         alignItems: { xs: "center", sm: "start" },
         [theme.breakpoints.down("sm")]: {
           justifyContent: "space-evenly",
@@ -225,8 +273,8 @@ const SearchBar = ({
         sx={{
           width: { xs: "100%", lg: "100%" },
           height: "auto",
-          py: 2,
-          gap: { xs: 0, lg: 1.5 },
+          py: 1.5,
+          gap: { xs: 0, lg: 0.5 },
           [theme.breakpoints.down("sm")]: {
             justifyContent: "space-evenly",
           },
@@ -242,9 +290,9 @@ const SearchBar = ({
               border: "none",
               outline: "none",
             },
-            borderRadius: 1,
+            borderRadius: { xs: 1, md: 0 },
             border: "none",
-            fontFamily: "montserrat",
+            fontFamily: "open sans",
             position: "relative",
           }}
           value={query}
@@ -256,7 +304,12 @@ const SearchBar = ({
         {/* button */}
         <Button
           variant="contained"
-          sx={{ backgroundColor: "#222127", color: "white" }}
+          sx={{
+            backgroundColor: "#222127",
+            color: "white",
+            fontFamily: "open sans",
+            borderRadius: { xs: 1, md: 0 },
+          }}
         >
           Search
         </Button>
@@ -286,12 +339,12 @@ const SearchBar = ({
   );
 };
 
-interface CardProps {
+interface SearchCardProps {
   location: LocationResult;
   setLocation: (res: LocationResult) => void;
 }
 
-const SearchCard = ({ location, setLocation }: CardProps) => {
+const SearchCard = ({ location, setLocation }: SearchCardProps) => {
   const navigate = useNavigate();
   const handleNav = () => {
     navigate("/restaurants");
@@ -332,6 +385,70 @@ const SearchCard = ({ location, setLocation }: CardProps) => {
         {location.countryCode}
       </Typography>
     </Box>
+  );
+};
+
+interface CardProps {
+  image: string;
+  main_text: string;
+  sub_text: string;
+}
+const AdCard = ({ image, main_text, sub_text }: CardProps) => {
+  return (
+    <Stack
+      component={motion.div}
+      initial={{ opacity: 0, y: 20, visibility: 0 }}
+      whileInView={{ opacity: 1, y: 0, visibility: 1 }}
+      transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+      viewport={{ once: true, amount: 0.6 }}
+      sx={{
+        width: { xs: 260, lg: 300 },
+        height: { xs: 300, lg: 320 },
+        alignItems: "start",
+        cursor: "pointer",
+      }}
+    >
+      <Box
+        sx={{
+          backgroundColor: "gray",
+          height: { xs: "65%" },
+          width: { xs: "100%" },
+        }}
+      >
+        <img
+          src={image}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectPosition: "center",
+            objectFit: "cover",
+          }}
+          alt=""
+        />
+      </Box>
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          width: "100%",
+          py: 0.8,
+          alignItems: "start",
+          justifyContent: "space-between",
+        }}
+      >
+        {/* main text */}
+        <Typography
+          variant="body1"
+          sx={{ fontWeight: 600, fontSize: { xs: 12, md: 14 } }}
+        >
+          {main_text}
+        </Typography>
+        {/* sub text */}
+        <Typography variant="caption">{sub_text}</Typography>
+      </Box>
+    </Stack>
   );
 };
 export default LandingPage;

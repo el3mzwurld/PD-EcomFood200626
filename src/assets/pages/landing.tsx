@@ -248,7 +248,6 @@ const SearchBar = ({
   searchResults,
   query,
   setQuery,
-  isLoading,
   setLocation,
 }: SearchBarProps) => {
   const theme = useTheme();

@@ -1,7 +1,6 @@
 import { Box, Grid, Stack, Typography, useTheme } from "@mui/material";
 import { useLocation } from "../context/locationContext";
 import { useUser } from "../context/userContext";
-import { AccountCircleRounded } from "@mui/icons-material";
 import { useRestaurant } from "../context/restaurantContext";
 import type { Cuisine, Restaurant, UserLocation } from "../types/types";
 import { useNavigate } from "react-router-dom";
@@ -250,13 +249,7 @@ interface CardProps {
 const RestaurantCard = ({ restaurant, location }: CardProps) => {
   const navigate = useNavigate();
   const handleNav = () => {
-    navigate(`/restaurant/${restaurant.id}`, {
-      state: {
-        cuisine: restaurant.cuisine,
-        countryCode: location.countryCode,
-        restaurant: restaurant,
-      },
-    });
+    navigate(`/restaurant/${restaurant.id}`);
   };
 
   return (

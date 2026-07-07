@@ -8,7 +8,6 @@ import {
   Snackbar,
   Stack,
   Typography,
-  Modal,
   Dialog,
   DialogTitle,
   DialogActions,
@@ -16,7 +15,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Footer, Navbar } from "./menu";
-import { useNavigate, useNavigation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import type {
   CartItem,
   Currency,
@@ -46,7 +45,7 @@ const Checkout = () => {
   const resID = id as string;
   const navigate = useNavigate();
   const { cart, total, clearCart } = useCart();
-  const { getRestaurantById, isLoading } = useRestaurant();
+  const { getRestaurantById, isLoading, restaurants } = useRestaurant();
   const [isSnackbarOpen, setSnackbarOpen] = useState(false);
   const { isAuthenticated, authError, user } = useUser();
   const { location } = useLocation();
@@ -70,7 +69,7 @@ const Checkout = () => {
   const restaurant = getRestaurantById(resID);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || restaurants.length === 0) return;
 
     if (!restaurant) {
       navigate("/restaurants", { replace: true });
@@ -239,11 +238,6 @@ const Checkout = () => {
   );
 };
 
-//
-//
-//
-//
-//
 //delivery details
 interface DeliveryProps {
   handleOpen: () => void;
@@ -428,9 +422,7 @@ const DeliveryOptions = ({
     </Stack>
   );
 };
-//
-//
-//
+
 // restaurant and order details
 
 interface RestaurantOrderProps {
@@ -632,10 +624,6 @@ const AccordionCard = ({ item, getCurrency }: CardProps) => {
   );
 };
 
-//
-//
-//
-//
 //location modal
 export const LocationModal = ({
   open,
@@ -646,7 +634,7 @@ export const LocationModal = ({
 }) => {
   const [place, setPlace] = useState<LocationResult | null>(null);
   const [query, setQuery] = useState("");
-  const { results, isLoading, searchError } = useSearch(query);
+  const { results } = useSearch(query);
   const { setLocation } = useLocation();
 
   const handleSetLocation = () => {
@@ -663,12 +651,17 @@ export const LocationModal = ({
         <Stack
           component={"form"}
           spacing={1}
-          sx={{ height: { xs: 300 }, width: { xs: 200 } }}
+          sx={{ height: { xs: 300 }, width: { xs: 200, md: 270 } }}
         >
           <Box
             component={"input"}
             type="text"
-            sx={{ width: "100%", height: { xs: 40 } }}
+            sx={{
+              width: "100%",
+              height: { xs: 40 },
+              px: 1,
+              ":focus": { outline: "none" },
+            }}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           ></Box>
@@ -689,7 +682,7 @@ export const LocationModal = ({
                   }}
                   onClick={() => {
                     setPlace(m);
-                    setQuery(place?.label ?? "");
+                    setQuery(m.label ?? "");
                   }}
                 >
                   <Typography variant="subtitle2" sx={{ fontSize: { xs: 10 } }}>

@@ -1,18 +1,18 @@
 // Logic :
-// The logic behind this is to get the responses from the fetchNearbyRestaurants and enrich the restaurant objects with details they need to make sense to the UI
+// The logic behind this is to get the responses from the places API radius search and enrich the restaurant objects with details they need to make sense to the UI
 
 import type { Restaurant, SupportedCountry } from "../types/types";
 import type { RawPlace } from "./geoapify";
 import { seededRandom } from "./randomizer";
 import { resolveCuisine } from "./resolveCuisine";
 import placeholder from "../img/no-img.jpg";
+
 export const enrichRestaurant = (
   raw: RawPlace,
   route: { distanceKM: number; travelTimeSecs: number; available: boolean },
   country_code?: SupportedCountry,
 ): Restaurant => {
   const random = seededRandom(raw.properties.place_id);
-  const countryCode = raw.properties.country_code.toUpperCase();
   const cuisine = resolveCuisine(
     raw.properties.catering?.cuisine,
     country_code ? country_code : raw.properties.country_code.toUpperCase(),

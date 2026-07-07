@@ -29,7 +29,6 @@ export function resolveCuisine(
       if (mappedCuisine) return mappedCuisine;
     }
   }
-
   //if no cuisine matches our mappers - we will sort of infer the cuisine, by randomizing on the weighted pool using the country code as a sort of guide
   const pool = weightedCuisinePool[countryCode as SupportedCountry];
 

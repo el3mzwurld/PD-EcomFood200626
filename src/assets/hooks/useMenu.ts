@@ -101,11 +101,10 @@ const randomMealTier = (): "Starter" | "Mains" => {
   return Arr[rand_index];
 };
 
-const mealPricer = (resID: string, country_code: SupportedCountry): number => {
+const mealPricer = (country_code: SupportedCountry): number => {
   const meal_cat = randomMealTier();
   let price = 0;
   let normalized_price = price;
-  const random = seededRandom(resID);
   if (meal_cat === "Starter") {
     const min = 1000;
     const max = 3000;
@@ -162,7 +161,7 @@ const mealDBMapper = (
     name: meal.strMeal,
     description: `A classic ${meal.strCategory.toLowerCase()} dish - made in ${meal.strArea.toLowerCase()}, straight to your doorstep.`,
     category: randomMealTier(),
-    price: mealPricer(restaurantID, country_Code),
+    price: mealPricer(country_Code),
     photoUrl: meal.strMealThumb,
   };
 };
@@ -170,7 +169,7 @@ const mealDBMapper = (
 export const useMenu = (
   restaurantID?: string,
   cuisine?: Cuisine,
-  countryCode?: SupportedCountry | undefined,
+  countryCode?: SupportedCountry,
 ) => {
   const [menu, setMenu] = useState<Meal[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -271,7 +270,6 @@ export const useMenu = (
           .filter((meal) => meal !== null)
           .map((meal) => {
             const mappedMeal = mealDBMapper(meal, restaurantID, countryCode);
-
             return { ...mappedMeal };
           });
         // if no meal was found, we return Menu not available

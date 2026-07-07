@@ -74,20 +74,6 @@ export type CartState = {
   items: CartItem[];
 };
 
-export type CartActions =
-  | {
-      type: "ADD_ITEM";
-      restaurantID: string;
-      restaurantName: string;
-      item: CartItem;
-    }
-  | {
-      type: "REMOVE_ITEM";
-      menuItemID: string;
-    }
-  | { type: "UPDATE_QTY"; menuItemID: string; quantity: number }
-  | { type: "CLEAR_CART" };
-
 //order types
 
 export type OrderStage =
@@ -107,7 +93,7 @@ export type Order = {
   deliveryAddress: string;
   deliveryCoords: Coordinates;
   driverInstructions: string;
-  createdAt: number; // regular JS milliseconds, we're going to derive the order stage from this
+  createdAt: number; // regular JS milliseconds, multiply by 60000 to get time in seconds
   etaMinutes: number; // copied from restaurant delivery time
   paystackReference: string;
 };

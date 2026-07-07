@@ -1,9 +1,9 @@
 import type { LocationResult, Coordinates } from "../types/types";
-
 const places_url = "https://api.geoapify.com/v2/places";
 const autocomplete_url = "https://api.geoapify.com/v1/geocode/autocomplete";
 const api_key = "adbe980b02b341a498650221d57beea8";
 const routing_matrix_url = "https://api.geoapify.com/v1/routematrix";
+
 type GeoapifyFeature = {
   properties: {
     place_id: string;
@@ -17,8 +17,7 @@ type GeoapifyFeature = {
 type GeoapifyResponse = {
   features: GeoapifyFeature[];
 };
-
-// auto complete suggestions
+//Auto complete suggestions
 
 export async function fetchLocationSuggestions(
   query: string,
@@ -82,6 +81,7 @@ type PlacesResponse = {
   features: RawPlace[];
 };
 
+//get nearby restaurants
 export async function fetchNearbyRestaurants(
   coords: Coordinates,
   radius: number,
@@ -129,7 +129,7 @@ type RouteMatrixResponse = {
     } | null>
   >;
 };
-
+//get route times from user to target
 export async function fetchRouteTimes(
   userCoords: Coordinates,
   restaurantCoords: Coordinates[],

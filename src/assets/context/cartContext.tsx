@@ -38,7 +38,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const persistence = (state: CartState) => {
     localStorage.setItem(cart_key, JSON.stringify(state));
     setCart(state);
-    console.log(cart);
   };
 
   const addItem = (resID: string, res_name: string, item: CartItem) => {

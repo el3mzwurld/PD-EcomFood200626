@@ -48,7 +48,7 @@ export const ghanianMenu: MealTemplate[] = [
     category: "Mains",
   },
   {
-    name: "Banku & Tilapia",
+    name: "Banku",
     description:
       "Dumplings, grilled tilapia, and a range of spicy sauces to follow",
     price: 80,
@@ -97,30 +97,14 @@ export const ghanianMenu: MealTemplate[] = [
     price: 15,
     category: "Drinks",
   },
-  {
-    name: "Alvaro",
-    description: "Chilled 50cl Malt drink",
-    price: 15,
-    category: "Drink",
-  },
+
   {
     name: "Freshly Squeezed Orange Juice",
     description: "Cold pressed, bottled chilled, just for you",
     price: 20,
     category: "Drink",
   },
-  {
-    name: "Asaana",
-    description: "Sweetened corn drink",
-    price: 20,
-    category: "Drink",
-  },
-  {
-    name: "Lamugin",
-    description: "Chilled spiced ginger drink",
-    price: 20,
-    category: "Drink",
-  },
+
   {
     name: "Malt Drink",
     description: "Premium chilled malt-milk sweet drink",

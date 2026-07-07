@@ -6,7 +6,6 @@ export const useSearch = (query: string) => {
   // states
   const [results, setResults] = useState<LocationResult[]>([]);
   const [searchError, setSearchError] = useState<string | null>(null);
-
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchLocation = async (query: string, signal?: AbortSignal) => {
@@ -16,7 +15,7 @@ export const useSearch = (query: string) => {
     try {
       const data = await fetchLocationSuggestions(query, signal);
       console.log(data);
-      if (data.length == 0) {
+      if (data.length === 0) {
         setSearchError("No locations were found for this query");
         return;
       }

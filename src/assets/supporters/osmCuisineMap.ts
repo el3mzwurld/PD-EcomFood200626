@@ -1,6 +1,7 @@
 import type { Cuisine } from "../types/types";
 import type { SupportedCountry } from "../types/types";
 
+//map cuisine names to
 export const OsmCuisineMapper: Record<string, Cuisine> = {
   //national cuisines
   italian: "Italian",
@@ -25,7 +26,6 @@ export const OsmCuisineMapper: Record<string, Cuisine> = {
   cake: "Continental",
   arab: "Continental",
 };
-
 // OSM tags that mean "local to this country" — resolved dynamically using countryCode
 export const localAfricanTags = new Set([
   "african",
@@ -40,7 +40,6 @@ export const localAfricanTags = new Set([
   "nigerian",
   "kenyan",
 ]);
-
 //maps supported country codes to their local cuisines
 export const countryToCuisine: Record<SupportedCountry, Cuisine> = {
   NG: "Nigerian",

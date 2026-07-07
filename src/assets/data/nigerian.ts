@@ -17,6 +17,12 @@ export const nigerianMenu: MealTemplate[] = [
     category: "Starters",
   },
   {
+    name: "Meat pie",
+    description: "Pastry beauty",
+    price: 3500,
+    category: "Starters",
+  },
+  {
     name: "Peppered gizzard",
     description: "Fried gizzard in spicy pepper sauce",
     price: 3500,
@@ -26,12 +32,6 @@ export const nigerianMenu: MealTemplate[] = [
     name: "Moi Moi",
     description: "Tasty bean cakes, with eggs and crayfish",
     price: 1500,
-    category: "Starters",
-  },
-  {
-    name: "Peppered Snail",
-    description: "Grilled snail in peppered tomato sauce",
-    price: 4500,
     category: "Starters",
   },
   //mains
@@ -51,13 +51,6 @@ export const nigerianMenu: MealTemplate[] = [
     name: "Native Rice",
     description: "Tasty palm oil rice, assorted meat and sea food",
     price: 6000,
-    category: "Mains",
-  },
-  {
-    name: "Egusi & Pounded Yam",
-    description:
-      "Egusi, Yam swallow and assorted meat. More than enough to fill your belly",
-    price: 3500,
     category: "Mains",
   },
   {
@@ -81,7 +74,7 @@ export const nigerianMenu: MealTemplate[] = [
     category: "Mains",
   },
   {
-    name: "Yam & Egg Sauces",
+    name: "Yam & Egg Sauce",
     description: "Wake up to this Nigerian Classic, right at your doorstep",
     price: 3500,
     category: "Mains",

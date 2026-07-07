@@ -47,13 +47,13 @@ export const fastFoodMenu: MealTemplate[] = [
     price: 4000,
   },
   {
-    name: "Beef Shawarma",
+    name: "Beef Shawarma Wrap",
     description: "Spiced beef, cabbage, tomato, garlic sauce, flatbread",
     category: "Mains",
     price: 4000,
   },
   {
-    name: "Chicken Shawarma",
+    name: "Chicken Shawarma Wrap",
     description: "Spiced chicken, cabbage, tomato, garlic sauce, flatbread",
     category: "Mains",
     price: 3500,
@@ -97,7 +97,7 @@ export const fastFoodMenu: MealTemplate[] = [
     price: 1000,
   },
   {
-    name: "Chilled Water (50cl)",
+    name: "Bottled Water (50cl)",
     description: "Still mineral water, served chilled",
     category: "Drinks",
     price: 500,
@@ -109,7 +109,7 @@ export const fastFoodMenu: MealTemplate[] = [
     price: 1500,
   },
   {
-    name: "Strawberry Milkshake",
+    name: "Milkshake",
     description: "Thick blended strawberry milkshake",
     category: "Drinks",
     price: 2500,
@@ -168,13 +168,13 @@ export const kenyanFastFoodMenu: MealTemplate[] = [
     price: 800,
   },
   {
-    name: "Beef Shawarma",
+    name: "Beef Shawarma Wrap",
     description: "Spiced beef, cabbage, tomato, garlic sauce, flatbread",
     category: "Mains",
     price: 850,
   },
   {
-    name: "Chicken Shawarma",
+    name: "Chicken Shawarma Wrap",
     description: "Spiced chicken, cabbage, tomato, garlic sauce, flatbread",
     category: "Mains",
     price: 750,
@@ -290,13 +290,13 @@ export const ghanianFastFoodMenu: MealTemplate[] = [
     price: 80,
   },
   {
-    name: "Beef Shawarma",
+    name: "Beef Shawarma Wrap",
     description: "Spiced beef, cabbage, tomato, garlic sauce, flatbread",
     category: "Mains",
     price: 85,
   },
   {
-    name: "Chicken Shawarma",
+    name: "Chicken Shawarma Wrap",
     description: "Spiced chicken, cabbage, tomato, garlic sauce, flatbread",
     category: "Mains",
     price: 75,

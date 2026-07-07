@@ -60,11 +60,7 @@ const Menu = () => {
 
   const cuisine = restaurant?.cuisine;
   const countryCode = location?.countryCode;
-  const { menu, isLoading, error } = useMenu(
-    restaurantID,
-    cuisine,
-    countryCode,
-  );
+  const { menu } = useMenu(restaurantID, cuisine, countryCode);
 
   useEffect(() => {
     if (resLoading || restaurants.length === 0) return;
@@ -80,7 +76,6 @@ const Menu = () => {
     const category = item.category?.toLowerCase?.();
     return category === "starter" || category === "starters";
   });
-
   const mains = menu.filter(
     (item) => item.category?.toLowerCase?.() === "mains",
   );

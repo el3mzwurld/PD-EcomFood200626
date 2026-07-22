@@ -251,6 +251,8 @@ const SearchBar = ({
   setLocation,
 }: SearchBarProps) => {
   const theme = useTheme();
+  const navigate = useNavigate();
+
   return (
     // container
     <Stack
@@ -308,6 +310,10 @@ const SearchBar = ({
             color: "white",
             fontFamily: "open sans",
             borderRadius: { xs: 1, md: 0 },
+          }}
+          onClick={() => {
+            setLocation(searchResults[0]);
+            navigate("/restaurants");
           }}
         >
           Search

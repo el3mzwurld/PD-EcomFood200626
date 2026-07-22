@@ -8,7 +8,7 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Footer, Navbar } from "./menu";
 import type { Order } from "../types/types";
@@ -17,7 +17,6 @@ import { useOrderTracking } from "../hooks/useOrder";
 const order_key = "nyamza:currentOrder";
 
 const Order = () => {
-  const { id } = useParams();
   const navigate = useNavigate();
   //get current order from local storage/null
   const [order, setOrder] = useState<Order | null>(() => {

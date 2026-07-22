@@ -36,7 +36,7 @@ const LandingPage = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [query, setQuery] = useState("");
 
-  const { isLoading, searchError, results } = useSearch(query);
+  const { isLoading, results } = useSearch(query);
 
   const { setLocation } = useLocation();
 

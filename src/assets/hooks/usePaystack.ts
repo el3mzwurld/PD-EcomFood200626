@@ -1,9 +1,6 @@
-import { useEffect } from "react";
 import type { SupportedCountry } from "../types/types";
 import { usePaystackPayment } from "react-paystack";
 
-const paystack_script_id = "paystack-inline-script";
-const payment_script_src = "https://js.paystack.co/v1/inline.js";
 const test_pk_key = "pk_test_c333f4e48e08d514feaf2b8669767d747f153fc3";
 const currencyMap: Record<SupportedCountry, string> = {
   NG: "NGN",

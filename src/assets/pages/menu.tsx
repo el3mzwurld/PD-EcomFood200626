@@ -1,8 +1,4 @@
-import {
-  useParams,
-  useLocation as RouterLocation,
-  useNavigate,
-} from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import type {
   CartItem,
   Currency,
@@ -483,7 +479,6 @@ const OrderModal = ({ restaurant }: { restaurant: Restaurant }) => {
       return;
     }
   };
-  const { user, isAuthenticated } = useUser();
   // handle decrement
   const handleDec = (menuID: string) => {
     const item = cart.items.find((item) => item.menuItemID === menuID);
@@ -858,9 +853,9 @@ export const Navbar = ({ handleOpen }: NavbarProps) => {
               }}
               onClick={() => {
                 {
-                  const sendtoAuth = setTimeout(() => {
+                  setTimeout(() => {
                     navigate("/auth");
-                  }, 300);
+                  }, 1000);
                 }
               }}
             />

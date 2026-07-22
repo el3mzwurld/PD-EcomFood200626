@@ -78,9 +78,9 @@ const Checkout = () => {
   // check on mount if the cart ID matches up to the same restaurant the user tried to order from
   useEffect(() => {
     if (cart.restaurantID !== resID || cart.items.length === 0) {
-      const navDelayed = setTimeout(() => {
+      setTimeout(() => {
         navigate("/restaurants", { replace: true });
-      }, 400);
+      }, 4000);
       return;
     }
   }, [cart.restaurantID, cart.items.length, resID, navigate]);
@@ -212,11 +212,7 @@ const Checkout = () => {
           >
             <RestaurantAndOrderDetails restaurant={restaurant} />
           </Stack>
-          <LocationModal
-            open={open}
-            handleClose={handleClosed}
-            handleOpen={handleOpen}
-          />
+          <LocationModal open={open} handleClose={handleClosed} />
         </Stack>
         <Snackbar
           open={isSnackbarOpen && Boolean(authError)}
@@ -584,7 +580,6 @@ type CardProps = {
 };
 const AccordionCard = ({ item, getCurrency }: CardProps) => {
   const { location } = useLocation();
-  const country = location && (location.countryCode as SupportedCountry);
   return (
     <Stack
       direction={"row"}

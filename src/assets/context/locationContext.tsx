@@ -1,6 +1,10 @@
 import React from "react";
 import { createContext, useContext, useState } from "react";
-import type { UserLocation, LocationResult } from "../types/types";
+import type {
+  UserLocation,
+  LocationResult,
+  SupportedCountry,
+} from "../types/types";
 import { SupportedCountries } from "../types/types";
 
 type LocationContextType = {
@@ -39,7 +43,7 @@ export const LocationProvider = ({
     // set the user's location
     const userLocation: UserLocation = {
       coords: result.coords,
-      countryCode: result.countryCode,
+      countryCode: result.countryCode as SupportedCountry,
       label: result.label,
       source: "search",
     };

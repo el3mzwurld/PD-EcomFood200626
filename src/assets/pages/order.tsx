@@ -16,7 +16,7 @@ import { useOrderTracking } from "../hooks/useOrder";
 
 const order_key = "nyamza:currentOrder";
 
-const Order = () => {
+const OrderPage = () => {
   const navigate = useNavigate();
   //get current order from local storage/null
   const [order, setOrder] = useState<Order | null>(() => {
@@ -445,4 +445,4 @@ const OrderTracker = ({ order }: OrderTrackerProps) => {
   );
 };
 
-export default Order;
+export default OrderPage;

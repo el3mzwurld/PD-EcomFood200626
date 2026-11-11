@@ -18,7 +18,7 @@ const Stages: StageType[] = [
 ];
 
 //to allow the MUI stepper to consume it, we have to map the stage to the index
-//placed -> confirmed -> prep. ->> picked -> otw -> delivered
+//placed -> confirmed -> prep. ->> picked -> otw -> delivered ( 0, 1, 2 ,3 , 4 ,5)
 const StageToIndex: Record<OrderStage, number> = {
   placed: 0,
   confirmed: 1,
@@ -52,14 +52,12 @@ const getRemMins = (order: Order): number => {
 export const useOrderTracking = (order: Order) => {
   //use this forcetick value to force a re-render every 10 seconds so we can get current stage and remaining minutes
   const [, forceTick] = useReducer((x: number) => x + 1, 0);
-
   useEffect(() => {
     // if the order has been completed, return
     if (getCurrentStage(order) === "delivered") {
       return;
     }
-    // re-render every ten seconds
-    //forcetick + 10 = 10, 11 + 10 = 21 seconds....so and so
+
     const id = setInterval(forceTick, 10000);
 
     return () => clearInterval(id);

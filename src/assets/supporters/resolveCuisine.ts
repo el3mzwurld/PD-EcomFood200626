@@ -1,4 +1,5 @@
 import type { Cuisine, SupportedCountry } from "../types/types";
+// cuisine mappers
 import {
   OsmCuisineMapper,
   localAfricanTags,

@@ -1,7 +1,7 @@
 import type { Cuisine } from "../types/types";
 import type { SupportedCountry } from "../types/types";
 
-//map cuisine names to
+//map cuisine names to proper Cuisine type
 export const OsmCuisineMapper: Record<string, Cuisine> = {
   //national cuisines
   italian: "Italian",
@@ -20,7 +20,7 @@ export const OsmCuisineMapper: Record<string, Cuisine> = {
   noodles: "Fast Food",
   regional: "Fast Food",
 
-  //catch alls, non-generalistic cuisines salads, cakes, basically cuisines that don't capture a specific type of food
+  //catch alls, non-general cuisines salads, cakes, basically cuisines that don't capture a specific type of food
   salads: "Continental",
   coffee_shop: "Continental",
   cake: "Continental",

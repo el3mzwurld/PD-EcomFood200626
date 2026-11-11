@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { Footer, Navbar } from "./menu";
 import type { Order } from "../types/types";
 import { useOrderTracking } from "../hooks/useOrder";
@@ -30,11 +30,14 @@ const OrderPage = () => {
     if (!order) {
       navigate("/restaurants");
     }
-  }, [order, navigate]);
+  }, [order]);
 
   if (!order) {
-    return null;
+    setTimeout(() => {
+      <Navigate to={"/restaurants"} />;
+    }, 1000);
   }
+
   return (
     <Box sx={{ minHeight: "auto" }}>
       <Navbar />

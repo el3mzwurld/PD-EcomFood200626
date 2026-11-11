@@ -248,7 +248,6 @@ export const useMenu = (
     };
 
     //api menu
-
     const fetchApiMenu = async () => {
       setIsLoading(true);
       setError(null);

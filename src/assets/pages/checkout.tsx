@@ -426,7 +426,7 @@ interface RestaurantOrderProps {
 }
 
 const RestaurantAndOrderDetails = ({ restaurant }: RestaurantOrderProps) => {
-  const { cart } = useCart();
+  const { cart, total } = useCart();
   const { location } = useLocation();
   const country = location && (location.countryCode as SupportedCountry);
   const currency = (place: SupportedCountry): Currency => {
@@ -563,10 +563,10 @@ const RestaurantAndOrderDetails = ({ restaurant }: RestaurantOrderProps) => {
             }}
           >
             <Typography variant="subtitle1" sx={{ fontSize: { xs: 12 } }}>
-              Subtotal
+              Total
             </Typography>
             <Typography variant="subtitle1" sx={{ fontSize: { xs: 12 } }}>
-              {country && currency(country)} {cart.items[0].price}
+              {country && currency(country)} {total}
             </Typography>
           </Stack>
         </Stack>

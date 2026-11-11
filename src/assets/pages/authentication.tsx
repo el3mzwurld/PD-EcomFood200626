@@ -187,7 +187,7 @@ const Authenticator = () => {
                   key={title}
                   direction="row"
                   spacing={2}
-                  alignItems="center"
+                  sx={{ alignItems: "center" }}
                 >
                   <Box
                     sx={{

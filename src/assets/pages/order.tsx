@@ -36,6 +36,8 @@ const OrderPage = () => {
     setTimeout(() => {
       <Navigate to={"/restaurants"} />;
     }, 1000);
+
+    return null;
   }
 
   return (
